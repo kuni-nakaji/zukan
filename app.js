@@ -192,24 +192,121 @@ function selectWaveCard(index, count) {
   waveState.basePhase += delta;
   waveState.targetPhase = waveState.basePhase;
   waveState.lastInput = performance.now();
+  updateWaveIndicator();
 }
 
-function setWavePointer(event, stage) {
-  const rect = stage.getBoundingClientRect();
-  const nx = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width - 0.5) * 2));
-  const ny = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height - 0.5) * 2));
+// 矢印送り：次へ
+function nextWaveCard() {
+  playPopSound();
+  waveState.basePhase += 1;
+  waveState.targetPhase = waveState.basePhase;
+  waveState.lastInput = performance.now();
+  updateWaveIndicator();
+}
 
-  waveState.pointerX = nx;
-  waveState.pointerY = ny;
-  waveState.tiltX = nx;
-  waveState.tiltY = ny;
+// 矢印送り：前へ
+function prevWaveCard() {
+  playPopSound();
+  waveState.basePhase -= 1;
+  waveState.targetPhase = waveState.basePhase;
+  waveState.lastInput = performance.now();
+  updateWaveIndicator();
+}
+
+// インジケーター表示の更新
+function updateWaveIndicator() {
+  const nameEl = document.getElementById('wave-current-name');
+  const countEl = document.getElementById('wave-current-count');
+  if (!nameEl || !countEl || waveCards.length === 0) return;
+
+  const count = waveCards.length;
+  const activeIdx = nearestWaveIndex(count);
+  const item = waveState.currentItems[activeIdx];
+  if (item) {
+    nameEl.textContent = `${item.icon} ${item.name}`;
+    countEl.textContent = `${activeIdx + 1} / ${count}`;
+  }
+}
+
+// スワイプ＆タッチ状態
+let isWaveDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let dragStartTime = 0;
+let dragStartPhase = 0;
+let hasDraggedFar = false;
+
+function handleWavePointerDown(event, stage) {
+  isWaveDragging = true;
+  hasDraggedFar = false;
+  dragStartX = event.clientX;
+  dragStartY = event.clientY;
+  dragStartTime = performance.now();
+  dragStartPhase = waveState.basePhase;
   waveState.active = true;
   waveState.lastInput = performance.now();
 
-  const axis = waveState.targetOrientation > 0.5 ? ny : nx;
-  waveState.targetPhase = waveState.basePhase + axis * (window.innerWidth < 680 ? 1.55 : 2.45);
-  stage.style.setProperty('--pointer-x', `${((nx + 1) / 2) * 100}%`);
-  stage.style.setProperty('--pointer-y', `${((ny + 1) / 2) * 100}%`);
+  try {
+    stage.setPointerCapture(event.pointerId);
+  } catch (_) {}
+}
+
+function handleWavePointerMove(event, stage) {
+  if (isWaveDragging) {
+    const dx = event.clientX - dragStartX;
+    const dy = event.clientY - dragStartY;
+
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+      hasDraggedFar = true;
+    }
+
+    const step = window.innerWidth < 680 ? 110 : 150;
+    const deltaPhase = - (waveState.targetOrientation > 0.5 ? dy : dx) / step;
+    waveState.targetPhase = dragStartPhase + deltaPhase;
+    waveState.phase = waveState.targetPhase;
+
+    waveState.tiltX = Math.max(-1, Math.min(1, dx / 120));
+    waveState.tiltY = Math.max(-1, Math.min(1, dy / 120));
+    waveState.lastInput = performance.now();
+  } else {
+    // マウスホバー時のチルト演出
+    const rect = stage.getBoundingClientRect();
+    const nx = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width - 0.5) * 2));
+    const ny = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height - 0.5) * 2));
+    waveState.pointerX = nx;
+    waveState.pointerY = ny;
+    waveState.tiltX = nx;
+    waveState.tiltY = ny;
+  }
+}
+
+function handleWavePointerUp(event, stage) {
+  if (!isWaveDragging) return;
+
+  const totalDx = event.clientX - dragStartX;
+  const totalDy = event.clientY - dragStartY;
+  const dt = Math.max(1, performance.now() - dragStartTime);
+  const primaryDist = waveState.targetOrientation > 0.5 ? totalDy : totalDx;
+
+  // スワイプまたはフリック判定（iPad/スマホで確実にページ送り）
+  if (Math.abs(primaryDist) > 35 || (Math.abs(primaryDist) > 15 && dt < 300)) {
+    const dir = primaryDist < 0 ? 1 : -1; // 左/上スワイプで次へ、右/下スワイプで前へ
+    waveState.basePhase = Math.round(dragStartPhase + dir);
+  } else {
+    waveState.basePhase = Math.round(waveState.targetPhase);
+  }
+
+  waveState.targetPhase = waveState.basePhase;
+  isWaveDragging = false;
+  waveState.active = false;
+  waveState.pointerX = 0;
+  waveState.pointerY = 0;
+
+  try {
+    stage.releasePointerCapture(event.pointerId);
+  } catch (_) {}
+
+  updateWaveIndicator();
 }
 
 function toggleWaveOrientation() {
@@ -218,6 +315,8 @@ function toggleWaveOrientation() {
   waveState.targetPhase = waveState.basePhase;
   waveState.lastInput = performance.now();
 }
+
+let lastAnnouncedIndex = -1;
 
 function renderWaveLoop(time) {
   if (!waveAnimationActive || waveCards.length === 0) return;
@@ -242,6 +341,11 @@ function renderWaveLoop(time) {
   const horizontalSpacing = Math.min(160, Math.max(110, window.innerWidth * 0.11));
   const verticalSpacing = Math.min(145, Math.max(105, window.innerHeight * 0.15));
   const activeIndex = nearestWaveIndex(count);
+
+  if (activeIndex !== lastAnnouncedIndex) {
+    lastAnnouncedIndex = activeIndex;
+    updateWaveIndicator();
+  }
 
   waveCards.forEach((card, index) => {
     const delta = wrappedDelta(index, waveState.phase, count);
@@ -295,6 +399,7 @@ function renderWave(items) {
       <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#94a3b8;font-weight:700;font-size:18px;text-align:center;">
         みつからなかったよ。<br>べつの ことばで さがしてみてね！
       </div>`;
+    updateWaveIndicator();
     return;
   }
 
@@ -316,6 +421,9 @@ function renderWave(items) {
     `;
 
     card.addEventListener('click', () => {
+      // スワイプ操作中のクリックは無視
+      if (hasDraggedFar) return;
+
       const activeIdx = nearestWaveIndex(count);
       if (activeIdx === index) {
         playPopSound();
@@ -329,6 +437,7 @@ function renderWave(items) {
     const followBtn = card.querySelector('.follow');
     if (followBtn) {
       followBtn.addEventListener('click', (e) => {
+        if (hasDraggedFar) return;
         e.stopPropagation();
         playPopSound();
         openDetailWithWarp(item);
@@ -339,19 +448,27 @@ function renderWave(items) {
     return card;
   });
 
+  updateWaveIndicator();
+
   if (!waveListenersAttached) {
     waveListenersAttached = true;
 
-    stage.addEventListener('pointermove', (e) => setWavePointer(e, stage));
-    stage.addEventListener('pointerdown', (e) => setWavePointer(e, stage));
-    stage.addEventListener('pointerleave', () => {
-      waveState.active = false;
-      waveState.targetPhase = waveState.basePhase;
-      waveState.pointerX = 0;
-      waveState.pointerY = 0;
-      stage.style.setProperty('--pointer-x', '50%');
-      stage.style.setProperty('--pointer-y', '50%');
-    });
+    // スワイプ＆ドラッグのポインターイベント（iPad / タブレット / スマホ / PC対応）
+    stage.addEventListener('pointerdown', (e) => handleWavePointerDown(e, stage));
+    stage.addEventListener('pointermove', (e) => handleWavePointerMove(e, stage));
+    stage.addEventListener('pointerup', (e) => handleWavePointerUp(e, stage));
+    stage.addEventListener('pointercancel', (e) => handleWavePointerUp(e, stage));
+
+    // 矢印ボタンのイベントリスナー（ステージ上 & 下部コントロールバー）
+    const prevBtn = document.getElementById('wave-prev-btn');
+    const nextBtn = document.getElementById('wave-next-btn');
+    const prevBottomBtn = document.getElementById('wave-prev-bottom-btn');
+    const nextBottomBtn = document.getElementById('wave-next-bottom-btn');
+
+    if (prevBtn) prevBtn.addEventListener('click', prevWaveCard);
+    if (nextBtn) nextBtn.addEventListener('click', nextWaveCard);
+    if (prevBottomBtn) prevBottomBtn.addEventListener('click', prevWaveCard);
+    if (nextBottomBtn) nextBottomBtn.addEventListener('click', nextWaveCard);
 
     stage.addEventListener('dblclick', toggleWaveOrientation);
 
@@ -363,6 +480,7 @@ function renderWave(items) {
       waveState.targetPhase = waveState.basePhase;
       waveState.active = false;
       waveState.lastInput = performance.now();
+      updateWaveIndicator();
     }, { passive: false });
 
     window.addEventListener('keydown', (event) => {
@@ -371,14 +489,10 @@ function renderWave(items) {
         event.preventDefault();
       }
       if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-        waveState.basePhase += 1;
-        waveState.targetPhase = waveState.basePhase;
-        waveState.lastInput = performance.now();
+        nextWaveCard();
       }
       if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-        waveState.basePhase -= 1;
-        waveState.targetPhase = waveState.basePhase;
-        waveState.lastInput = performance.now();
+        prevWaveCard();
       }
       if (event.key === ' ') toggleWaveOrientation();
       if (event.key === 'Enter') {

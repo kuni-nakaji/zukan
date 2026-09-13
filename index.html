@@ -81,9 +81,20 @@
         <div class="zukan-wave-wrapper" id="zukan-wave-wrapper">
           <div class="stage" id="stage" aria-label="3Dアイテムウェーブ">
             <div class="deck" id="deck"></div>
+            <!-- 左右の矢印送りボタン（ステージ上のフローティング） -->
+            <button class="wave-arrow-btn wave-prev-btn" id="wave-prev-btn" type="button" aria-label="まえのカードへ">◀</button>
+            <button class="wave-arrow-btn wave-next-btn" id="wave-next-btn" type="button" aria-label="つぎのカードへ">▶</button>
+          </div>
+          <div class="wave-controls-bar">
+            <button class="wave-bottom-btn" id="wave-prev-bottom-btn" type="button" aria-label="まえへ">◀ まえへ</button>
+            <div class="wave-indicator" id="wave-indicator">
+              <span class="wave-indicator-name" id="wave-current-name">🎒 ランドセル</span>
+              <span class="wave-indicator-count" id="wave-current-count">1 / 10</span>
+            </div>
+            <button class="wave-bottom-btn" id="wave-next-bottom-btn" type="button" aria-label="つぎへ">つぎへ ▶</button>
           </div>
           <p class="wave-hint">
-            👆 <strong>マウスをうごかすか スワイプして たんけん！</strong> まんなかのカードをタップで タイムスリップ！
+            👆 <strong>ゆびでスワイプするか、やじるしボタン「◀」「▶」でおくれるよ！</strong> まんなかのカードをおして タイムスリップ！
           </p>
         </div>
 

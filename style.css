@@ -1357,6 +1357,8 @@ summary:focus-visible,
   touch-action: none;
   cursor: grab;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .stage:active {
@@ -1520,6 +1522,116 @@ summary:focus-visible,
   color: #fdba74;
 }
 
+/* 左右の矢印ボタン（ステージ上のフローティングボタン） */
+.wave-arrow-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(24, 24, 27, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  transition: transform var(--duration-quick) var(--ease-out), background var(--duration-quick) var(--ease-out), border-color var(--duration-quick) var(--ease-out);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wave-arrow-btn.wave-prev-btn {
+  left: 18px;
+}
+
+.wave-arrow-btn.wave-next-btn {
+  right: 18px;
+}
+
+@media (hover: hover) {
+  .wave-arrow-btn:hover {
+    background: rgba(234, 88, 12, 0.85);
+    border-color: #fb923c;
+    transform: translateY(-50%) scale(1.1);
+  }
+}
+
+.wave-arrow-btn:active {
+  transform: translateY(-50%) scale(0.92) !important;
+  background: #ea580c;
+}
+
+/* 下部コントロールバー */
+.wave-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: #18181b;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 12px;
+}
+
+.wave-bottom-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f4f4f5;
+  border-radius: var(--radius-pill);
+  padding: 8px 18px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all var(--duration-quick) var(--ease-out);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (hover: hover) {
+  .wave-bottom-btn:hover {
+    background: rgba(234, 88, 12, 0.8);
+    border-color: #fb923c;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+}
+
+.wave-bottom-btn:active {
+  transform: scale(0.95);
+  background: #ea580c;
+}
+
+.wave-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.wave-indicator-name {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.wave-indicator-count {
+  color: #a1a1aa;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 @media (max-width: 680px) {
   .stage {
     height: 480px;
@@ -1527,6 +1639,21 @@ summary:focus-visible,
   }
   .card {
     width: clamp(130px, 34vw, 155px);
+  }
+  .wave-arrow-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+  .wave-arrow-btn.wave-prev-btn {
+    left: 10px;
+  }
+  .wave-arrow-btn.wave-next-btn {
+    right: 10px;
+  }
+  .wave-bottom-btn {
+    padding: 6px 14px;
+    font-size: 14px;
   }
 }
 
