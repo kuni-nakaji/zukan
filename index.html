@@ -19,10 +19,7 @@
           <p class="app-subtitle">タイムマシンで たんけん！ しょうがく1ねんせいむけ</p>
         </div>
       </div>
-      <div class="header-actions">
-        <button class="threeui-btn" id="threeui-btn" aria-label="3Dキャラクターウェーブをみる">🌌 3Dウェーブ</button>
-        <button class="settings-btn" id="settings-btn" aria-label="せってい">⚙️ せってい</button>
-      </div>
+      <button class="settings-btn" id="settings-btn" aria-label="せってい">⚙️ せってい</button>
     </div>
   </header>
 
@@ -68,12 +65,30 @@
         </nav>
       </section>
 
-      <!-- アイテム一覧 -->
+      <!-- アイテム一覧（ThreeUI 3D Wave 直接適応） -->
       <section class="catalog-section" aria-label="ずかんのアイテム一覧">
-        <h2 class="catalog-heading">
-          しりたい ものを えらんでね
-        </h2>
-        <div class="item-grid" id="item-grid" aria-live="polite">
+        <div class="catalog-header-row">
+          <h2 class="catalog-heading">
+            しりたい ものを えらんでね
+          </h2>
+          <div class="view-switcher" role="tablist" aria-label="ひょうじのきりかえ">
+            <button class="view-tab active" id="view-wave-btn" data-view="wave" role="tab" aria-selected="true">🌊 3Dウェーブ</button>
+            <button class="view-tab" id="view-grid-btn" data-view="grid" role="tab" aria-selected="false">▦ グリッド</button>
+          </div>
+        </div>
+
+        <!-- 3D Card Wave 表示 (ThreeUI Character Wave 直接統合) -->
+        <div class="zukan-wave-wrapper" id="zukan-wave-wrapper">
+          <div class="stage" id="stage" aria-label="3Dアイテムウェーブ">
+            <div class="deck" id="deck"></div>
+          </div>
+          <p class="wave-hint">
+            👆 <strong>マウスをうごかすか スワイプして たんけん！</strong> まんなかのカードをタップで タイムスリップ！
+          </p>
+        </div>
+
+        <!-- グリッド表示 -->
+        <div class="item-grid" id="item-grid" aria-live="polite" style="display: none;">
           <!-- JSでカードを動的生成 -->
         </div>
       </section>
@@ -192,25 +207,6 @@
       <div class="modal-btn-row">
         <button class="btn-secondary" id="close-key-btn" type="button">とじる</button>
         <button class="btn-primary" id="save-key-btn" type="button">ほぞんする</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ThreeUI Character Wave モーダル -->
-  <div class="threeui-modal-backdrop" id="threeui-modal" role="dialog" aria-modal="true" aria-labelledby="threeui-modal-title">
-    <div class="threeui-modal-card">
-      <div class="threeui-modal-header">
-        <div class="threeui-modal-identity">
-          <span class="threeui-tag">ThreeUI</span>
-          <h3 class="threeui-title" id="threeui-modal-title">🌌 3D Character Wave（キャラクターウェーブ）</h3>
-        </div>
-        <button class="threeui-close-btn" id="threeui-close-btn" aria-label="とじる">✕ とじる</button>
-      </div>
-      <div class="threeui-viewport shader-frame">
-        <iframe id="threeui-frame" title="Interactive Character Wave" sandbox="allow-scripts" style="width:100%; height:100%; border:none; background:#121212;"></iframe>
-      </div>
-      <div class="threeui-modal-footer">
-        <span class="threeui-hint">💡 画面をマウスやタッチで動かすと3Dに傾くよ！カードをクリックしてフォーカス、スペースキーで「たて / よこ」が切り替わるよ！</span>
       </div>
     </div>
   </div>

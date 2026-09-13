@@ -36,7 +36,7 @@ const catTabs = document.querySelectorAll('.cat-tab');
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
-  renderGrid(ZUKAN_DATA);
+  renderCatalog(ZUKAN_DATA);
   setupSpeechRecognition();
   setupEventListeners();
   loadApiKey();
@@ -99,40 +99,317 @@ function setupEventListeners() {
     settingsModal.classList.remove('active');
   });
 
-  // ThreeUI 3D Character Wave モーダル関連
-  const threeuiBtn = document.getElementById('threeui-btn');
-  const threeuiModal = document.getElementById('threeui-modal');
-  const threeuiCloseBtn = document.getElementById('threeui-close-btn');
-  const threeuiFrame = document.getElementById('threeui-frame');
+  // 表示形式切り替えタブ（3Dウェーブ ↔ グリッド）
+  const viewWaveBtn = document.getElementById('view-wave-btn');
+  const viewGridBtn = document.getElementById('view-grid-btn');
+  const waveWrapper = document.getElementById('zukan-wave-wrapper');
+  const gridWrapper = document.getElementById('item-grid');
 
-  if (threeuiBtn && threeuiModal && threeuiCloseBtn && threeuiFrame) {
-    threeuiBtn.addEventListener('click', () => {
+  if (viewWaveBtn && viewGridBtn && waveWrapper && gridWrapper) {
+    viewWaveBtn.addEventListener('click', () => {
       playPopSound();
-      threeuiModal.classList.add('open');
-      if (!threeuiFrame.src) {
-        threeuiFrame.src = 'threeui-wave.html';
+      viewWaveBtn.classList.add('active');
+      viewWaveBtn.setAttribute('aria-selected', 'true');
+      viewGridBtn.classList.remove('active');
+      viewGridBtn.setAttribute('aria-selected', 'false');
+      waveWrapper.style.display = 'block';
+      gridWrapper.style.display = 'none';
+      currentViewMode = 'wave';
+      if (!waveAnimationActive) {
+        waveAnimationActive = true;
+        wavePreviousTime = performance.now();
+        requestAnimationFrame(renderWaveLoop);
       }
     });
 
-    threeuiCloseBtn.addEventListener('click', () => {
-      threeuiModal.classList.remove('open');
-    });
-
-    threeuiModal.addEventListener('click', (e) => {
-      if (e.target === threeuiModal) {
-        threeuiModal.classList.remove('open');
-      }
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && threeuiModal.classList.contains('open')) {
-        threeuiModal.classList.remove('open');
-      }
+    viewGridBtn.addEventListener('click', () => {
+      playPopSound();
+      viewGridBtn.classList.add('active');
+      viewGridBtn.setAttribute('aria-selected', 'true');
+      viewWaveBtn.classList.remove('active');
+      viewWaveBtn.setAttribute('aria-selected', 'false');
+      waveWrapper.style.display = 'none';
+      gridWrapper.style.display = 'grid';
+      currentViewMode = 'grid';
     });
   }
 }
 
-// アイテムグリッド描画
+let currentViewMode = 'wave';
+
+// アイテムのカードカラー判定
+function getItemCardColor(item, index) {
+  const colors = [
+    '#78350f', '#881337', '#1e3a8a', '#365314', '#164e63',
+    '#581c87', '#831843', '#1f2937', '#064e3b', '#7c2d12'
+  ];
+  if (item.category && item.category.includes('たべもの')) return '#78350f';
+  if (item.category && item.category.includes('がっこう')) return '#1e3a8a';
+  if (item.category && item.category.includes('がっき')) return '#581c87';
+  if (item.category && item.category.includes('のりもの')) return '#164e63';
+  return colors[index % colors.length];
+}
+
+// ThreeUI 3D Wave アニメーション状態
+let waveCards = [];
+let waveState = {
+  phase: 2,
+  targetPhase: 2,
+  basePhase: 2,
+  orientation: window.innerWidth < 680 ? 1 : 0,
+  targetOrientation: window.innerWidth < 680 ? 1 : 0,
+  pointerX: 0,
+  pointerY: 0,
+  tiltX: 0,
+  tiltY: 0,
+  active: false,
+  manualOrientation: false,
+  lastInput: performance.now(),
+  currentItems: []
+};
+let waveAnimationActive = false;
+let waveAnimationFrameId = null;
+let wavePreviousTime = performance.now();
+let waveListenersAttached = false;
+
+function wrappedDelta(index, phase, count) {
+  let delta = index - phase;
+  while (delta > count / 2) delta -= count;
+  while (delta < -count / 2) delta += count;
+  return delta;
+}
+
+function nearestWaveIndex(count) {
+  if (count <= 0) return 0;
+  return (Math.round(waveState.phase) % count + count) % count;
+}
+
+function selectWaveCard(index, count) {
+  const current = nearestWaveIndex(count);
+  let delta = index - current;
+  if (delta > count / 2) delta -= count;
+  if (delta < -count / 2) delta += count;
+  waveState.basePhase += delta;
+  waveState.targetPhase = waveState.basePhase;
+  waveState.lastInput = performance.now();
+}
+
+function setWavePointer(event, stage) {
+  const rect = stage.getBoundingClientRect();
+  const nx = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width - 0.5) * 2));
+  const ny = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height - 0.5) * 2));
+
+  waveState.pointerX = nx;
+  waveState.pointerY = ny;
+  waveState.tiltX = nx;
+  waveState.tiltY = ny;
+  waveState.active = true;
+  waveState.lastInput = performance.now();
+
+  const axis = waveState.targetOrientation > 0.5 ? ny : nx;
+  waveState.targetPhase = waveState.basePhase + axis * (window.innerWidth < 680 ? 1.55 : 2.45);
+  stage.style.setProperty('--pointer-x', `${((nx + 1) / 2) * 100}%`);
+  stage.style.setProperty('--pointer-y', `${((ny + 1) / 2) * 100}%`);
+}
+
+function toggleWaveOrientation() {
+  waveState.manualOrientation = true;
+  waveState.targetOrientation = waveState.targetOrientation > 0.5 ? 0 : 1;
+  waveState.targetPhase = waveState.basePhase;
+  waveState.lastInput = performance.now();
+}
+
+function renderWaveLoop(time) {
+  if (!waveAnimationActive || waveCards.length === 0) return;
+
+  const count = waveCards.length;
+  const deltaTime = Math.min(32, time - wavePreviousTime);
+  wavePreviousTime = time;
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ease = reducedMotion ? 1 : 1 - Math.pow(0.0007, deltaTime / 1000);
+
+  if (!waveState.active && !waveState.manualOrientation && time - waveState.lastInput > 4200) {
+    const idle = time - waveState.lastInput - 4200;
+    waveState.targetPhase = waveState.basePhase + Math.sin(idle * 0.00034) * 1.9;
+    waveState.targetOrientation = (Math.sin(idle * 0.00019 - Math.PI / 2) + 1) / 2;
+  }
+
+  waveState.phase += (waveState.targetPhase - waveState.phase) * ease;
+  waveState.orientation += (waveState.targetOrientation - waveState.orientation) * ease * 0.72;
+  waveState.tiltX += ((waveState.active ? waveState.pointerX : 0) - waveState.tiltX) * ease * 0.72;
+  waveState.tiltY += ((waveState.active ? waveState.pointerY : 0) - waveState.tiltY) * ease * 0.72;
+
+  const horizontalSpacing = Math.min(160, Math.max(110, window.innerWidth * 0.11));
+  const verticalSpacing = Math.min(145, Math.max(105, window.innerHeight * 0.15));
+  const activeIndex = nearestWaveIndex(count);
+
+  waveCards.forEach((card, index) => {
+    const delta = wrappedDelta(index, waveState.phase, count);
+    const distance = Math.abs(delta);
+    const focus = Math.exp(-Math.pow(distance, 2) * 1.05);
+    const side = Math.max(0, 1 - distance / 5);
+
+    const horizontalX = delta * horizontalSpacing;
+    const horizontalY = Math.sin(delta * 0.65) * 26 + Math.abs(delta) * 7;
+    const verticalX = Math.sin(delta * 0.65) * 26 + Math.abs(delta) * 7;
+    const verticalY = delta * verticalSpacing;
+
+    const x = horizontalX * (1 - waveState.orientation) + verticalX * waveState.orientation;
+    const y = horizontalY * (1 - waveState.orientation) + verticalY * waveState.orientation;
+    const z = focus * 95 - distance * 78;
+    const scale = 0.58 + side * 0.16 + focus * 0.38;
+    const rotateX = -waveState.tiltY * focus * 6 + delta * 2.2 * waveState.orientation;
+    const rotateY = waveState.tiltX * focus * 8 - delta * 8.5 * (1 - waveState.orientation);
+    const rotateZ = delta * 2.25 * (1 - waveState.orientation) - delta * 1.4 * waveState.orientation;
+
+    card.style.setProperty('--focus', focus.toFixed(4));
+    card.style.zIndex = String(Math.round(1000 - distance * 100));
+    card.style.opacity = String(Math.max(0.18, side * 0.82 + focus * 0.18));
+    card.style.filter = `blur(${Math.max(0, distance - 1.35) * 0.45}px) saturate(${0.75 + focus * 0.25})`;
+    card.style.transform = [
+      'translate(-50%, -50%)',
+      `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, ${z.toFixed(2)}px)`,
+      `rotateX(${rotateX.toFixed(2)}deg)`,
+      `rotateY(${rotateY.toFixed(2)}deg)`,
+      `rotateZ(${rotateZ.toFixed(2)}deg)`,
+      `scale(${scale.toFixed(4)})`
+    ].join(' ');
+    card.setAttribute('aria-current', index === activeIndex ? 'true' : 'false');
+  });
+
+  waveAnimationFrameId = requestAnimationFrame(renderWaveLoop);
+}
+
+// ThreeUI 3D Wave 描画
+function renderWave(items) {
+  const deck = document.getElementById('deck');
+  const stage = document.getElementById('stage');
+  if (!deck || !stage) return;
+
+  deck.innerHTML = '';
+  waveCards = [];
+  waveState.currentItems = items;
+
+  if (items.length === 0) {
+    deck.innerHTML = `
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#94a3b8;font-weight:700;font-size:18px;text-align:center;">
+        みつからなかったよ。<br>べつの ことばで さがしてみてね！
+      </div>`;
+    return;
+  }
+
+  const count = items.length;
+  waveCards = items.map((item, index) => {
+    const card = document.createElement('button');
+    card.className = 'card';
+    card.type = 'button';
+    card.dataset.index = String(index);
+    card.setAttribute('aria-label', `${item.name}の なまえの はじまりを しらべる`);
+    card.style.setProperty('--card-color', getItemCardColor(item, index));
+    card.innerHTML = `
+      <span class="portrait" aria-hidden="true">${item.icon}</span>
+      <span class="identity">
+        <span class="name">${item.name}</span>
+        <span class="role">生まれ: ${item.origin.country || 'にほん'}</span>
+        <span class="follow" aria-hidden="true">しらべる 🚀</span>
+      </span>
+    `;
+
+    card.addEventListener('click', () => {
+      const activeIdx = nearestWaveIndex(count);
+      if (activeIdx === index) {
+        playPopSound();
+        openDetailWithWarp(item);
+      } else {
+        playPopSound();
+        selectWaveCard(index, count);
+      }
+    });
+
+    const followBtn = card.querySelector('.follow');
+    if (followBtn) {
+      followBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        playPopSound();
+        openDetailWithWarp(item);
+      });
+    }
+
+    deck.appendChild(card);
+    return card;
+  });
+
+  if (!waveListenersAttached) {
+    waveListenersAttached = true;
+
+    stage.addEventListener('pointermove', (e) => setWavePointer(e, stage));
+    stage.addEventListener('pointerdown', (e) => setWavePointer(e, stage));
+    stage.addEventListener('pointerleave', () => {
+      waveState.active = false;
+      waveState.targetPhase = waveState.basePhase;
+      waveState.pointerX = 0;
+      waveState.pointerY = 0;
+      stage.style.setProperty('--pointer-x', '50%');
+      stage.style.setProperty('--pointer-y', '50%');
+    });
+
+    stage.addEventListener('dblclick', toggleWaveOrientation);
+
+    stage.addEventListener('wheel', (event) => {
+      event.preventDefault();
+      const direction = Math.sign(Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX);
+      if (!direction) return;
+      waveState.basePhase += direction;
+      waveState.targetPhase = waveState.basePhase;
+      waveState.active = false;
+      waveState.lastInput = performance.now();
+    }, { passive: false });
+
+    window.addEventListener('keydown', (event) => {
+      if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', ' '].includes(event.key)) {
+        if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+        event.preventDefault();
+      }
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        waveState.basePhase += 1;
+        waveState.targetPhase = waveState.basePhase;
+        waveState.lastInput = performance.now();
+      }
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        waveState.basePhase -= 1;
+        waveState.targetPhase = waveState.basePhase;
+        waveState.lastInput = performance.now();
+      }
+      if (event.key === ' ') toggleWaveOrientation();
+      if (event.key === 'Enter') {
+        const activeIdx = nearestWaveIndex(waveCards.length);
+        if (waveState.currentItems[activeIdx]) {
+          openDetailWithWarp(waveState.currentItems[activeIdx]);
+        }
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (!waveState.manualOrientation) {
+        waveState.targetOrientation = window.innerWidth < 680 ? 1 : 0;
+      }
+    });
+  }
+
+  if (!waveAnimationActive) {
+    waveAnimationActive = true;
+    wavePreviousTime = performance.now();
+    requestAnimationFrame(renderWaveLoop);
+  }
+}
+
+// カタログ全体描画（Wave + Grid）
+function renderCatalog(items) {
+  renderGrid(items);
+  renderWave(items);
+}
+
+// アイテムグリッド描画（従来のグリッド）
 function renderGrid(items) {
   itemGrid.innerHTML = '';
   if (items.length === 0) {
@@ -182,7 +459,7 @@ function filterAndRenderGrid() {
     return matchCategory && matchQuery;
   });
 
-  renderGrid(filtered);
+  renderCatalog(filtered);
 }
 
 // 検索ハンドラー
@@ -236,6 +513,7 @@ function openDetailWithWarp(item) {
 
 // 詳細画面を表示
 function showDetail(item) {
+  waveAnimationActive = false;
   homeView.style.display = 'none';
   detailView.classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -345,6 +623,12 @@ function goHome() {
   detailView.classList.remove('active');
   homeView.style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (currentViewMode === 'wave' && !waveAnimationActive) {
+    waveAnimationActive = true;
+    wavePreviousTime = performance.now();
+    requestAnimationFrame(renderWaveLoop);
+  }
 }
 
 // 音声読み上げ（SpeechSynthesis）

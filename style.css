@@ -1283,156 +1283,251 @@ summary:focus-visible,
   }
 }
 
-/* ===== ThreeUI Character Wave Integration ===== */
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.threeui-btn {
-  background: linear-gradient(135deg, #1e1b4b, #312e81);
-  color: #e0e7ff;
-  border: 1px solid rgba(129, 140, 248, 0.4);
-  border-radius: var(--radius-pill);
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: transform var(--duration-feedback) var(--ease-out), box-shadow var(--duration-feedback) var(--ease-out), border-color var(--duration-feedback) var(--ease-out);
-  user-select: none;
-}
-
-@media (hover: hover) {
-  .threeui-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
-    border-color: #818cf8;
-    color: #ffffff;
-  }
-}
-
-.threeui-btn:active {
-  transform: scale(0.97);
-}
-
-.threeui-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 10, 15, 0.85);
-  backdrop-filter: blur(12px);
-  z-index: 3000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--duration-normal) var(--ease-out);
-}
-
-.threeui-modal-backdrop.open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.threeui-modal-card {
-  width: min(94vw, 1080px);
-  height: min(88vh, 760px);
-  background: #141416;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  animation: sheetEntrance var(--duration-enter) var(--ease-out) both;
-}
-
-.threeui-modal-header {
+/* ===== ThreeUI Character Wave - アイテム選択 3Dアニメーション ===== */
+.catalog-header-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
-  background: #18181c;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-.threeui-modal-identity {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.threeui-tag {
-  background: rgba(99, 102, 241, 0.2);
-  color: #a5b4fc;
-  border: 1px solid rgba(99, 102, 241, 0.4);
-  padding: 2px 10px;
+.view-switcher {
+  display: inline-flex;
+  background: var(--color-paper-muted);
+  border: 1px solid var(--color-border);
+  padding: 4px;
   border-radius: var(--radius-pill);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  gap: 4px;
 }
 
-.threeui-title {
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 800;
-  margin: 0;
-}
-
-.threeui-close-btn {
-  background: rgba(255, 255, 255, 0.08);
-  color: #d1d5db;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-pill);
-  padding: 6px 14px;
+.view-tab {
+  border: none;
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-family: inherit;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
-  transition: background var(--duration-feedback) var(--ease-out), color var(--duration-feedback) var(--ease-out), transform var(--duration-feedback) var(--ease-out);
+  transition: all var(--duration-quick) var(--ease-out);
+  user-select: none;
 }
 
-@media (hover: hover) {
-  .threeui-close-btn:hover {
-    background: rgba(255, 255, 255, 0.16);
-    color: #ffffff;
-    transform: translateY(-1px);
-  }
+.view-tab.active {
+  background: var(--color-surface);
+  color: var(--accent-primary);
+  box-shadow: var(--shadow-subtle);
 }
 
-.threeui-close-btn:active {
+.view-tab:active {
   transform: scale(0.97);
 }
 
-.threeui-viewport {
-  flex: 1;
+/* 3D Wave コンテナ（アイテム選択のメインステージ） */
+.zukan-wave-wrapper {
   position: relative;
   width: 100%;
-  height: 100%;
-  min-height: 380px;
-  background: #121212;
+  border-radius: var(--radius-xl);
   overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #141414;
 }
 
-.threeui-modal-footer {
-  padding: 12px 24px;
-  background: #18181c;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  color: #9ca3af;
-  font-size: 13px;
-  font-weight: 600;
+.stage {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  position: relative;
+  width: 100%;
+  height: 520px;
+  min-height: 460px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(
+      circle at var(--pointer-x) var(--pointer-y),
+      rgba(234, 88, 12, 0.14),
+      transparent 28rem
+    ),
+    #141416;
+  perspective: 1100px;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+}
+
+.stage:active {
+  cursor: grabbing;
+}
+
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 36%,
+    rgba(0, 0, 0, 0.25) 75%,
+    rgba(0, 0, 0, 0.55) 120%
+  );
+}
+
+.deck {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transform-style: preserve-3d;
+}
+
+/* ThreeUI 3Dカード */
+.card {
+  --focus: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(140px, 16vw, 190px);
+  aspect-ratio: 0.72;
+  padding: 14px 12px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  color: #f3f0e9;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent 36%),
+    var(--card-color, #1e293b);
+  box-shadow:
+    0 calc(8px + var(--focus) * 24px) calc(16px + var(--focus) * 44px)
+      rgba(0, 0, 0, calc(0.35 + var(--focus) * 0.35)),
+    inset 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+  appearance: none;
+  outline: none;
+  transform-style: preserve-3d;
+  will-change: transform, opacity, filter;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  font-family: inherit;
+  transition: box-shadow 150ms var(--ease-out);
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, calc(0.06 + var(--focus) * 0.2));
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.card:focus-visible::after {
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.4);
+}
+
+/* カードアイコン部 */
+.card .portrait {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.28);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 -16px 28px rgba(0, 0, 0, 0.2);
+  transform: translateZ(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(48px, 6vw, 68px);
+  line-height: 1;
+}
+
+/* カードテキスト部 */
+.card .identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
   text-align: center;
+  transform: translateZ(12px);
 }
 
-.threeui-hint {
-  display: inline-block;
-  color: #cbd5e1;
+.card .name {
+  max-width: 100%;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: clamp(16px, 1.8vw, 20px);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card .role {
+  max-width: 100%;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: clamp(12px, 1.2vw, 13px);
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card .follow {
+  margin-top: 4px;
+  padding: 5px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-pill);
+  color: #ffffff;
+  background: var(--accent-primary);
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.4);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  transition: transform var(--duration-quick) var(--ease-out), background var(--duration-quick) var(--ease-out);
+}
+
+.card[aria-current="true"] .follow {
+  background: #f97316;
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.8);
+  transform: scale(1.05);
+}
+
+.wave-hint {
+  padding: 12px 18px;
+  background: #18181b;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #a1a1aa;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+}
+
+.wave-hint strong {
+  color: #fdba74;
+}
+
+@media (max-width: 680px) {
+  .stage {
+    height: 480px;
+    min-height: 420px;
+  }
+  .card {
+    width: clamp(130px, 34vw, 155px);
+  }
 }
 
 /* ===== アクセシビリティ：動きの軽減 (prefers-reduced-motion) ===== */
