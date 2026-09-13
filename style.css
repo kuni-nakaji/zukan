@@ -1283,6 +1283,158 @@ summary:focus-visible,
   }
 }
 
+/* ===== ThreeUI Character Wave Integration ===== */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.threeui-btn {
+  background: linear-gradient(135deg, #1e1b4b, #312e81);
+  color: #e0e7ff;
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform var(--duration-feedback) var(--ease-out), box-shadow var(--duration-feedback) var(--ease-out), border-color var(--duration-feedback) var(--ease-out);
+  user-select: none;
+}
+
+@media (hover: hover) {
+  .threeui-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+    border-color: #818cf8;
+    color: #ffffff;
+  }
+}
+
+.threeui-btn:active {
+  transform: scale(0.97);
+}
+
+.threeui-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+.threeui-modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.threeui-modal-card {
+  width: min(94vw, 1080px);
+  height: min(88vh, 760px);
+  background: #141416;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: sheetEntrance var(--duration-enter) var(--ease-out) both;
+}
+
+.threeui-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: #18181c;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.threeui-modal-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.threeui-tag {
+  background: rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.threeui-title {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.threeui-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #d1d5db;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--duration-feedback) var(--ease-out), color var(--duration-feedback) var(--ease-out), transform var(--duration-feedback) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .threeui-close-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+}
+
+.threeui-close-btn:active {
+  transform: scale(0.97);
+}
+
+.threeui-viewport {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 380px;
+  background: #121212;
+  overflow: hidden;
+}
+
+.threeui-modal-footer {
+  padding: 12px 24px;
+  background: #18181c;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #9ca3af;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.threeui-hint {
+  display: inline-block;
+  color: #cbd5e1;
+}
+
 /* ===== アクセシビリティ：動きの軽減 (prefers-reduced-motion) ===== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

@@ -98,6 +98,38 @@ function setupEventListeners() {
     }
     settingsModal.classList.remove('active');
   });
+
+  // ThreeUI 3D Character Wave モーダル関連
+  const threeuiBtn = document.getElementById('threeui-btn');
+  const threeuiModal = document.getElementById('threeui-modal');
+  const threeuiCloseBtn = document.getElementById('threeui-close-btn');
+  const threeuiFrame = document.getElementById('threeui-frame');
+
+  if (threeuiBtn && threeuiModal && threeuiCloseBtn && threeuiFrame) {
+    threeuiBtn.addEventListener('click', () => {
+      playPopSound();
+      threeuiModal.classList.add('open');
+      if (!threeuiFrame.src) {
+        threeuiFrame.src = 'threeui-wave.html';
+      }
+    });
+
+    threeuiCloseBtn.addEventListener('click', () => {
+      threeuiModal.classList.remove('open');
+    });
+
+    threeuiModal.addEventListener('click', (e) => {
+      if (e.target === threeuiModal) {
+        threeuiModal.classList.remove('open');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && threeuiModal.classList.contains('open')) {
+        threeuiModal.classList.remove('open');
+      }
+    });
+  }
 }
 
 // アイテムグリッド描画
