@@ -4,27 +4,1226 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>もののなまえ はじまり図鑑 〜タイムマシンで たんけん！〜</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+/* もののなまえ はじまり図鑑
+ * Impeccable Design Language: High-craft, purposeful education interface
+ * - Anti-Slop: No nested cards (Flattened hierarchy), No badge-soup, No gratuitous looping bounce
+ * - Typography: Zen Maru Gothic with intentional scale, proper leading, clear jump-ratio
+ * - Color & Contrast: Warm paper backdrop (#fafaf9), deep ink text (#1c1917), singular terracotta accent (#ea580c)
+ * - Motion: Zero idle visual noise, crisp responsive micro-interactions (≤150ms)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap');
+
+:root {
+  /* 基調色：温かみのある紙と上質なインク */
+  --color-paper: #fbfbf9;
+  --color-paper-muted: #f4f4f2;
+  --color-surface: #ffffff;
+  --color-surface-hover: #fafaf9;
+  --color-border: #e7e5e4;
+  --color-border-subtle: #f0eeec;
+  --color-border-strong: #d6d3d1;
+
+  --color-ink-display: #1c1917;
+  --color-ink-body: #292524;
+  --color-ink-muted: #57534e;
+  --color-ink-faint: #78716c;
+
+  /* ブランドアクセント：テラコッタ＆冒険のスカイ */
+  --accent-primary: #ea580c;
+  --accent-primary-hover: #c2410c;
+  --accent-primary-tint: #fff7ed;
+  --accent-primary-border: #ffedd5;
+
+  --accent-sky: #0284c7;
+  --accent-sky-tint: #f0f9ff;
+  --accent-sky-border: #e0f2fe;
+
+  --accent-emerald: #059669;
+  --accent-emerald-tint: #ecfdf5;
+  --accent-emerald-border: #a7f3d0;
+
+  /* シャドウ：濁りのない上質な階層深度 */
+  --shadow-subtle: 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-card: 0 2px 8px -2px rgba(28, 25, 23, 0.06), 0 1px 3px rgba(28, 25, 23, 0.04);
+  --shadow-card-hover: 0 8px 24px -4px rgba(234, 88, 12, 0.12), 0 2px 6px -1px rgba(28, 25, 23, 0.04);
+  --shadow-sheet: 0 4px 28px -6px rgba(28, 25, 23, 0.08), 0 2px 8px -2px rgba(28, 25, 23, 0.04);
+
+  /* コーナースケール：一貫した8px / 16px / 24px / 全丸 */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 9999px;
+
+  /* 遷移時間：キビキビとした確実なレスポンス */
+  --duration-quick: 120ms;
+  --duration-normal: 180ms;
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===== リセット & ベース ===== */
+html {
+  scroll-behavior: smooth;
+  background-color: var(--color-paper);
+}
+
+::selection {
+  background: var(--accent-primary-tint);
+  color: var(--accent-primary-hover);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Zen Maru Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink-body);
+  min-height: 100vh;
+  padding-bottom: 80px;
+  font-size: 18px;
+  line-height: 1.75;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ルビの最適化（小学1年生が迷わず読める配置） */
+ruby {
+  ruby-position: over;
+  display: inline-flex;
+  flex-direction: column-reverse;
+  vertical-align: bottom;
+  text-align: center;
+  line-height: 1.1;
+}
+
+ruby rt {
+  font-size: 0.58em;
+  color: var(--accent-primary);
+  font-weight: 700;
+  user-select: none;
+  margin-bottom: 2px;
+  letter-spacing: 0.04em;
+}
+
+/* フォーカスリング（角丸に沿う高品質ボックスシャドウ） */
+button:focus-visible,
+input:focus-visible,
+summary:focus-visible,
+.brand:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.35);
+}
+
+/* ===== レイアウトコンテナ ===== */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ===== ヘッダー ===== */
+.header {
+  border-bottom: 1px solid var(--color-border-subtle);
+  background-color: var(--color-surface);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--radius-sm);
+  transition: opacity var(--duration-quick) ease;
+}
+
+.brand:hover {
+  opacity: 0.85;
+}
+
+.brand-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-title {
+  font-size: clamp(20px, 4.5vw, 26px);
+  font-weight: 900;
+  color: var(--color-ink-display);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.app-subtitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-ink-muted);
+  letter-spacing: 0.02em;
+}
+
+.settings-btn {
+  background: var(--color-paper-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: all var(--duration-quick) ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.settings-btn:hover {
+  background: var(--color-surface);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.settings-btn:active {
+  transform: translateY(1px);
+}
+
+/* ===== 検索セクション ===== */
+.search-section {
+  padding: 36px 0 28px;
+}
+
+.search-input-group {
+  display: flex;
+  align-items: center;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 6px 6px 6px 16px;
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--duration-quick) ease, box-shadow var(--duration-quick) ease;
+}
+
+.search-input-group:focus-within {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.12);
+}
+
+.mic-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  transition: background var(--duration-quick) ease, transform var(--duration-quick) ease;
+  user-select: none;
+}
+
+.mic-btn:hover {
+  background: var(--color-paper-muted);
+}
+
+.mic-btn:active {
+  transform: scale(0.94);
+}
+
+.mic-btn.listening {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--color-ink-display);
+  outline: none;
+  min-width: 120px;
+}
+
+.search-input::placeholder {
+  color: var(--color-ink-faint);
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.search-submit-btn {
+  background: var(--accent-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 12px 28px;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background var(--duration-quick) ease, transform var(--duration-quick) ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.search-submit-btn:hover {
+  background: var(--accent-primary-hover);
+}
+
+.search-submit-btn:active {
+  transform: translateY(1px);
+}
+
+.search-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== カテゴリナビゲーション ===== */
+.category-nav {
+  margin-top: 20px;
+}
+
+.category-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.category-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.cat-tab {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: all var(--duration-quick) ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.cat-tab:hover {
+  border-color: var(--color-ink-muted);
+  color: var(--color-ink-display);
+}
+
+.cat-tab.active {
+  background: var(--color-ink-display);
+  border-color: var(--color-ink-display);
+  color: #ffffff;
+}
+
+/* ===== アイテムカタログ一覧 ===== */
+.catalog-section {
+  padding-top: 12px;
+}
+
+.catalog-heading {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--color-ink-muted);
+  margin-bottom: 16px;
+  letter-spacing: 0.02em;
+}
+
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+}
+
+.item-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px 14px 16px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--duration-quick) var(--ease-spring);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+}
+
+@media (hover: hover) {
+  .item-card:hover {
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-3px);
+  }
+}
+
+.item-card:active {
+  transform: translateY(1px);
+}
+
+.item-card-icon {
+  font-size: 42px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.item-card-name {
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--color-ink-display);
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+.item-card-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-ink-muted);
+  background: var(--color-paper-muted);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+/* ===== ワープ演出 ===== */
+.warp-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(28, 25, 23, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-normal) ease;
+}
+
+.warp-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.warp-machine {
+  font-size: 72px;
+  animation: warp-spin 1s infinite linear;
+}
+
+.warp-text {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 900;
+  margin-top: 20px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+@keyframes warp-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ===== 詳細画面（カード多重入れ子の解消・フラットシート化） ===== */
+.detail-view {
+  display: none;
+  animation: fadeIn var(--duration-normal) ease-out;
+  padding-top: 20px;
+}
+
+.detail-view.active {
+  display: block;
+}
+
+.detail-nav {
+  margin-bottom: 16px;
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 8px 18px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: all var(--duration-quick) ease;
+  user-select: none;
+}
+
+.back-btn:hover {
+  background: var(--color-surface);
+  border-color: var(--color-ink-display);
+  color: var(--color-ink-display);
+}
+
+.back-btn:active {
+  transform: translateY(1px);
+}
+
+/* メイン詳細シート（カードインカードを完全廃止） */
+.detail-sheet {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 36px 36px 44px;
+  box-shadow: var(--shadow-sheet);
+}
+
+/* ヒーローヘッダー */
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.detail-identity {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.detail-avatar {
+  font-size: 56px;
+  line-height: 1;
+  background: var(--accent-primary-tint);
+  border: 1px solid var(--accent-primary-border);
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-naming {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-name {
+  font-size: clamp(28px, 6vw, 40px);
+  font-weight: 900;
+  color: var(--color-ink-display);
+  line-height: 1.15;
+}
+
+.detail-tag {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  background: var(--accent-primary-tint);
+  padding: 3px 12px;
+  border-radius: var(--radius-pill);
+}
+
+.speak-btn {
+  background: var(--accent-emerald);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 12px 22px;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background var(--duration-quick) ease, transform var(--duration-quick) ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.speak-btn:hover {
+  background: #047857;
+}
+
+.speak-btn:active {
+  transform: translateY(1px);
+}
+
+.speak-btn.speaking {
+  background: #dc2626;
+}
+
+/* 共通セクション見出し */
+.sheet-section-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--color-ink-display);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+/* 起源セクション */
+.detail-origin-section {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.origin-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .origin-meta-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.meta-cell {
+  background: var(--color-paper);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meta-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-ink-muted);
+}
+
+.meta-value {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--color-ink-display);
+}
+
+.meta-value small {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink-muted);
+}
+
+.origin-story-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-ink-display);
+  line-height: 1.85;
+  background: var(--accent-primary-tint);
+  border-left: 4px solid var(--accent-primary);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 18px 22px;
+}
+
+/* 歴史タイムライン */
+.detail-history-section {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  padding-left: 28px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  left: 9px;
+  width: 2px;
+  background: var(--color-border);
+}
+
+.timeline-step {
+  position: relative;
+  background: var(--color-paper);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+}
+
+.timeline-step::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 24px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-ink-muted);
+  border: 2px solid var(--color-surface);
+}
+
+.timeline-step.current {
+  background: var(--accent-sky-tint);
+  border-color: var(--accent-sky-border);
+}
+
+.timeline-step.current::before {
+  background: var(--accent-sky);
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.step-era {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--color-ink-display);
+}
+
+.step-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-ink-muted);
+  background: var(--color-surface);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.step-body {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.step-img {
+  font-size: 32px;
+  line-height: 1;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-content h4 {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--color-ink-display);
+  margin-bottom: 4px;
+}
+
+.step-content p {
+  font-size: 16px;
+  color: var(--color-ink-muted);
+  line-height: 1.7;
+}
+
+/* 豆知識リスト */
+.detail-trivia-section {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.trivia-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.trivia-card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.trivia-icon {
+  font-size: 26px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.trivia-text {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-ink-body);
+  line-height: 1.7;
+}
+
+/* クイズセクション */
+.detail-quiz-section {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.quiz-header {
+  margin-bottom: 18px;
+}
+
+.quiz-pill {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--accent-emerald);
+  background: var(--accent-emerald-tint);
+  border: 1px solid var(--accent-emerald-border);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 8px;
+}
+
+.quiz-question {
+  font-size: 21px;
+  font-weight: 900;
+  color: var(--color-ink-display);
+  line-height: 1.5;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quiz-opt-btn {
+  background: var(--color-paper);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-ink-display);
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--duration-quick) ease;
+  user-select: none;
+}
+
+.quiz-opt-btn:hover {
+  background: var(--color-surface);
+  border-color: var(--color-ink-display);
+}
+
+.quiz-opt-btn:active {
+  transform: translateY(1px);
+}
+
+.quiz-opt-btn.correct {
+  background: var(--accent-emerald) !important;
+  color: #ffffff !important;
+  border-color: var(--accent-emerald) !important;
+}
+
+.quiz-opt-btn.wrong {
+  background: #f87171 !important;
+  color: #ffffff !important;
+  border-color: #ef4444 !important;
+  opacity: 0.8;
+}
+
+.quiz-feedback {
+  margin-top: 16px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  font-size: 17px;
+  font-weight: 700;
+  display: none;
+  line-height: 1.7;
+}
+
+.quiz-feedback.show {
+  display: block;
+}
+
+.quiz-feedback.correct-msg {
+  background: var(--accent-emerald-tint);
+  color: #065f46;
+  border: 1px solid var(--accent-emerald-border);
+}
+
+.quiz-feedback.wrong-msg {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+/* おとな向け解説 */
+.detail-parent-section {
+  padding-top: 28px;
+}
+
+.parent-details {
+  background: var(--color-paper);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.parent-summary {
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+}
+
+.parent-summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary-arrow {
+  font-size: 14px;
+  transition: transform var(--duration-quick) ease;
+}
+
+.parent-details[open] .summary-arrow {
+  transform: rotate(180deg);
+}
+
+.parent-body {
+  padding: 18px 20px 22px;
+  font-size: 15px;
+  color: var(--color-ink-body);
+  line-height: 1.85;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* ===== 設定モーダル ===== */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(28, 25, 23, 0.6);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 20px;
+}
+
+.modal-backdrop.active {
+  display: flex;
+  animation: fadeIn var(--duration-normal) ease-out;
+}
+
+.modal-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  max-width: 500px;
+  width: 100%;
+  padding: 32px;
+  box-shadow: var(--shadow-sheet);
+  border: 1px solid var(--color-border);
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--color-ink-display);
+  margin-bottom: 8px;
+}
+
+.modal-desc {
+  font-size: 14px;
+  color: var(--color-ink-muted);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-ink-display);
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  outline: none;
+  background: var(--color-paper);
+  transition: border-color var(--duration-quick) ease, box-shadow var(--duration-quick) ease;
+}
+
+.form-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+  background: #ffffff;
+}
+
+.form-hint {
+  font-size: 12px;
+  color: var(--color-ink-faint);
+  margin-top: 6px;
+}
+
+.modal-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: background var(--duration-quick) ease;
+}
+
+.btn-secondary:hover {
+  background: var(--color-paper-muted);
+}
+
+.btn-primary {
+  background: var(--accent-primary);
+  color: #ffffff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: var(--radius-pill);
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background var(--duration-quick) ease;
+}
+
+.btn-primary:hover {
+  background: var(--accent-primary-hover);
+}
+
+/* ===== クイズ正解時の紙吹雪 (Confetti) ===== */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 2500;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  animation: confetti-fall 2.2s linear forwards;
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== スマートフォン対応 (max-width: 640px) ===== */
+@media (max-width: 640px) {
+  .header-inner {
+    padding: 12px 16px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  .search-section {
+    padding: 24px 0 20px;
+  }
+
+  .search-input-group {
+    flex-wrap: wrap;
+    border-radius: var(--radius-lg);
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .search-input {
+    order: 2;
+    width: 100%;
+    min-width: 0;
+    padding: 4px 6px;
+    font-size: 17px;
+  }
+
+  .mic-btn {
+    order: 1;
+    width: 40px;
+    height: 40px;
+    margin-right: 0;
+  }
+
+  .search-submit-btn {
+    order: 3;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .item-grid {
+    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+    gap: 10px;
+  }
+
+  .item-card {
+    padding: 16px 8px 12px;
+  }
+
+  .item-card-icon {
+    font-size: 34px;
+  }
+
+  .item-card-name {
+    font-size: 15px;
+  }
+
+  .detail-sheet {
+    padding: 24px 18px 32px;
+    border-radius: var(--radius-lg);
+  }
+
+  .detail-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .detail-identity {
+    gap: 14px;
+  }
+
+  .detail-avatar {
+    width: 68px;
+    height: 68px;
+    font-size: 42px;
+  }
+
+  .speak-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .origin-story-text {
+    font-size: 17px;
+    padding: 14px 16px;
+  }
+
+  .step-body {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* ===== アクセシビリティ：動きの軽減 (prefers-reduced-motion) ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+</style>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
 </head>
 <body>
 
   <!-- ヘッダー -->
   <header class="header">
-    <div class="logo-badge">🚀 しょうがく１ねんせい むけ</div>
-    <div class="title-container" onclick="goHome()">
-      <span class="title-icon">⏰</span>
-      <h1 class="app-title">もののなまえ はじまり図鑑</h1>
-      <span class="title-icon">✨</span>
-    </div>
-
-    <div class="header-actions">
+    <div class="header-inner">
+      <div class="brand" onclick="goHome()" role="button" tabindex="0" aria-label="ホームへもどる">
+        <span class="brand-icon" aria-hidden="true">⏰</span>
+        <div class="brand-text">
+          <h1 class="app-title">もののなまえ はじまり図鑑</h1>
+          <p class="app-subtitle">タイムマシンで たんけん！ しょうがく1ねんせいむけ</p>
+        </div>
+      </div>
       <button class="settings-btn" id="settings-btn" aria-label="せってい">⚙️ せってい</button>
     </div>
   </header>
 
   <!-- タイムマシン ワープ演出オーバーレイ -->
-  <div class="warp-overlay" id="warp-overlay">
+  <div class="warp-overlay" id="warp-overlay" aria-hidden="true">
     <div class="warp-machine">🌀</div>
     <div class="warp-text" id="warp-text">タイムスリップ！</div>
   </div>
@@ -33,30 +1232,27 @@
     
     <!-- ホーム画面 -->
     <main id="home-view">
-      <!-- 検索カード -->
-      <section class="search-card">
+      <!-- 検索セクション -->
+      <section class="search-section" aria-label="もののなまえをさがす">
         <form id="search-form" role="search" onsubmit="return false">
           <div class="search-input-group">
             <button class="mic-btn" id="mic-btn" title="こえで さがす" type="button" aria-label="こえで さがす（音声入力）">🎙️</button>
             <input 
-              type="text" 
+              type="search" 
               id="search-input" 
               class="search-input" 
-              placeholder="しりたい ものの なまえ（れい：ランドセル、パン）" 
+              placeholder="しりたい ものの なまえ（れい：ランドセル、パン、えんぴつ）" 
               autocomplete="off"
               spellcheck="false"
             >
             <button class="search-submit-btn" id="search-btn" type="submit">
-              <ruby>調<rt>しら</rt></ruby>べる 🚀
+              <ruby>調<rt>しら</rt></ruby>べる
             </button>
           </div>
         </form>
 
         <!-- カテゴリ切り替え -->
-        <div class="popular-section">
-          <div class="section-label">
-            <span>🏷️</span> なかま で えらぶ
-          </div>
+        <nav class="category-nav" aria-label="カテゴリでえらぶ">
           <div class="category-tabs">
             <button class="cat-tab active" data-category="all">🌟 ぜんぶ</button>
             <button class="cat-tab" data-category="school">🎒 がっこう・ぶんぼうぐ</button>
@@ -65,14 +1261,14 @@
             <button class="cat-tab" data-category="house">🏠 いえのなか</button>
             <button class="cat-tab" data-category="music">🎹 がっき</button>
           </div>
-        </div>
+        </nav>
       </section>
 
       <!-- アイテム一覧 -->
-      <section>
-        <div class="section-label">
-          <span>📚</span> タップして タイムマシンに のろう！
-        </div>
+      <section class="catalog-section" aria-label="ずかんのアイテム一覧">
+        <h2 class="catalog-heading">
+          しりたい ものを えらんでね
+        </h2>
         <div class="item-grid" id="item-grid" aria-live="polite">
           <!-- JSでカードを動的生成 -->
         </div>
@@ -80,91 +1276,95 @@
     </main>
 
     <!-- 詳細（図鑑たんけん）画面 -->
-    <article id="detail-view" class="detail-view">
+    <article id="detail-view" class="detail-view" aria-label="ずかんのくわしいページ">
       
-      <!-- もどるボタン -->
-      <div class="back-btn-container">
+      <!-- ナビゲーション -->
+      <div class="detail-nav">
         <button class="back-btn" id="back-btn">
-          <span>🔙</span> ホームへ もどる
+          ← ホームへ もどる
         </button>
       </div>
 
-      <!-- ヒーローカード -->
-      <div class="hero-card">
-        <div class="hero-header">
-          <div class="hero-title-group">
-            <div class="hero-icon" id="detail-icon">🎒</div>
-            <div class="hero-title-text">
-              <h2 id="detail-name">ランドセル</h2>
-              <span class="hero-badge-tag" id="detail-badge">オランダから きたよ</span>
+      <!-- メイン詳細シート（入れ子カードを廃止したクリーンな構造） -->
+      <div class="detail-sheet">
+        
+        <!-- ヒーローヘッダー -->
+        <header class="detail-header">
+          <div class="detail-identity">
+            <div class="detail-avatar" id="detail-icon" aria-hidden="true">🎒</div>
+            <div class="detail-naming">
+              <h2 class="detail-name" id="detail-name">ランドセル</h2>
+              <span class="detail-tag" id="detail-badge">オランダから きたよ</span>
             </div>
           </div>
-          <button class="speak-btn" id="speak-btn">
-            <span>🔊</span> こえで きく
+          <button class="speak-btn" id="speak-btn" aria-label="こえで きく">
+            <span aria-hidden="true">🔊</span> こえで きく
           </button>
-        </div>
+        </header>
 
-        <!-- なまえの はじまり（起源） -->
-        <div class="origin-section">
-          <div class="origin-badge">
-            <span>⛵️</span> なまえの はじまり（どこから きたの？）
-          </div>
-          <div class="origin-meta">
-            <div class="meta-box">
-              <div class="meta-label">生まれた くに</div>
-              <div class="meta-val" id="origin-country">🇳🇱 オランダ</div>
+        <!-- 起源ストーリー -->
+        <section class="detail-origin-section">
+          <h3 class="sheet-section-title">なまえの はじまり</h3>
+          
+          <div class="origin-meta-grid">
+            <div class="meta-cell">
+              <span class="meta-label">生まれた くに</span>
+              <span class="meta-value" id="origin-country">🇳🇱 オランダ</span>
             </div>
-            <div class="meta-box">
-              <div class="meta-label">もともとの ことば と いみ</div>
-              <div class="meta-val">
-                <span id="origin-word">ransel</span>
-                <span style="font-size: 13px; color: #64748b; display: block;" id="origin-meaning">（せなかに せおう ふくろ）</span>
-              </div>
+            <div class="meta-cell">
+              <span class="meta-label">もともとの ことば と いみ</span>
+              <span class="meta-value">
+                <strong id="origin-word">ransel</strong>
+                <small id="origin-meaning">（せなかに せおう ふくろ）</small>
+              </span>
             </div>
           </div>
-          <div class="origin-story" id="origin-story">
+
+          <p class="origin-story-text" id="origin-story">
             むかしの オランダの へいたいさんが せおっていた『ランセル』という ふくろが、にほんに つたわって『ランドセル』と よばれるようになったよ！
+          </p>
+        </section>
+
+        <!-- 歴史タイムライン -->
+        <section class="detail-history-section">
+          <h3 class="sheet-section-title">むかし と いま の ちがい</h3>
+          <div class="timeline" id="detail-timeline">
+            <!-- JSでステップ生成 -->
           </div>
-        </div>
+        </section>
 
-        <!-- 歴史タイムライン（むかし・いま） -->
-        <h3 class="section-title">
-          <span>⏳</span> むかし と いま の ちがい（へんせん）
-        </h3>
-        <div class="timeline" id="detail-timeline">
-          <!-- JSでステップ生成 -->
-        </div>
-
-        <!-- びっくり豆知識 -->
-        <h3 class="section-title">
-          <span>✨</span> びっくり まめちしき！
-        </h3>
-        <div class="trivia-cards" id="detail-trivia">
-          <!-- JSでカード生成 -->
-        </div>
+        <!-- 豆知識 -->
+        <section class="detail-trivia-section">
+          <h3 class="sheet-section-title">びっくり まめちしき</h3>
+          <div class="trivia-list" id="detail-trivia">
+            <!-- JSでカード生成 -->
+          </div>
+        </section>
 
         <!-- 3択クイズ -->
-        <div class="quiz-box" id="detail-quiz">
-          <div class="quiz-badge">🎯 たのしい クイズ！</div>
-          <div class="quiz-question" id="quiz-question">ランドセルは どこの くにの ことばでしょう？</div>
+        <section class="detail-quiz-section" id="detail-quiz">
+          <div class="quiz-header">
+            <span class="quiz-pill">クイズ！</span>
+            <h3 class="quiz-question" id="quiz-question">ランドセルは どこの くにの ことばでしょう？</h3>
+          </div>
           <div class="quiz-options" id="quiz-options">
             <!-- JSで選択肢生成 -->
           </div>
           <div class="quiz-feedback" id="quiz-feedback" aria-live="assertive"></div>
-        </div>
+        </section>
 
-        <!-- おとな向け解説アコーディオン -->
-        <div class="parent-accordion" id="parent-accordion">
-          <details>
+        <!-- おとな向け解説 -->
+        <section class="detail-parent-section" id="parent-accordion">
+          <details class="parent-details">
             <summary class="parent-summary">
               <span>👨‍👩‍👧 <strong>おうちの ひとへ</strong>（詳しい歴史の背景）</span>
-              <span>▼</span>
+              <span class="summary-arrow" aria-hidden="true">▾</span>
             </summary>
-            <div class="parent-content" id="parent-note-content">
+            <div class="parent-body" id="parent-note-content">
               <!-- JSで大人の解説挿入 -->
             </div>
           </details>
-        </div>
+        </section>
 
       </div>
     </article>
@@ -172,28 +1372,1622 @@
   </div>
 
   <!-- 設定モーダル（Gemini APIキー等） -->
-  <div class="modal-backdrop" id="settings-modal">
+  <div class="modal-backdrop" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-card">
-      <h3 class="modal-title">⚙️ おうちのひと向け せってい</h3>
-      <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;">
-        Google Gemini APIキーを入力すると、プリセット（20個）以外のどんな言葉でも、AIが小学1年生向けに「起源・歴史・豆知識・クイズ」を自動生成します。
+      <h3 class="modal-title" id="modal-title">おうちのひと向け せってい</h3>
+      <p class="modal-desc">
+        Google Gemini APIキーを入力すると、プリセット以外の言葉もAIが小学1年生向けに自動生成します。
       </p>
       <div class="form-group">
         <label class="form-label" for="api-key-input">Gemini API Key (無料枠でOK):</label>
         <input type="password" id="api-key-input" class="form-input" placeholder="AIzaSy...">
-        <p style="font-size: 12px; color: #94a3b8; margin-top: 4px;">
-          ※キーはご自身のブラウザ（LocalStorage）にのみ安全に保存されます。
+        <p class="form-hint">
+          ※APIキーはブラウザ内（LocalStorage）にのみ安全に保存されます。
         </p>
       </div>
       <div class="modal-btn-row">
-        <button class="btn-secondary" id="close-key-btn">とじる</button>
-        <button class="btn-primary" id="save-key-btn">ほぞんする</button>
+        <button class="btn-secondary" id="close-key-btn" type="button">とじる</button>
+        <button class="btn-primary" id="save-key-btn" type="button">ほぞんする</button>
       </div>
     </div>
   </div>
 
   <!-- スクリプト読み込み -->
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  <script>
+// もののなまえ はじまり図鑑 プリセットデータベース
+// 小学1年生向け：ふりがな（ルビ）、易しい言葉遣い、わかりやすいアイコンとエピソード
+
+const ZUKAN_DATA = [
+  {
+    id: "randoseru",
+    name: "ランドセル",
+    reading: "らんどせる",
+    category: "がっこう・ぶんぼうぐ",
+    icon: "🎒",
+    badge: "オランダから きたよ",
+    origin: {
+      country: "オランダ",
+      country_flag: "🇳🇱",
+      original_word: "ランセル (ransel)",
+      meaning: "せなかに せおう ふくろ",
+      story: "むかしの オランダの へいたいさんが せおっていた『ランセル』という ふくろが、にほんに つたわって『ランドセル』と よばれるようになったんだよ！"
+    },
+    history_steps: [
+      {
+        era: "150ねんくらい まえ（めいじ時代）",
+        badge: "むかしの すがた",
+        image: "🎒",
+        title: "ぬのの ふくろだった！",
+        text: "さいしょは ぬので できた へいたいや がくせいの カバンだったよ。いまみたいな かたい かわでは なかったんだ。"
+      },
+      {
+        era: "50ねんくらい まえ（おじいちゃんたちの ころ）",
+        badge: "ちょっと まえ",
+        image: "🎒",
+        title: "くろ と あか だけ！",
+        text: "おとこのこは『くろ』、おんなのこは『あか』と きまっていて、おもたい かわで つくられていたよ。"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🎒✨",
+        title: "カラフルで かるい！",
+        text: "むらさきや みずいろ、ぴんくなど、すきな いろを えらべるようになったよ。とても かるくて じょうぶ！"
+      }
+    ],
+    trivia: [
+      "にほんいがいの くにでは、小学生が おそろいの ランドセルを せおうのは とても めずらしいんだよ！",
+      "さいしょに いまの かたちの ランドセルを つかったのは、てんのうへいかの おこさまなんだって！"
+    ],
+    quiz: {
+      question: "ランドセルは もともと どこの くにの ことばでしょう？",
+      options: ["アメリカ", "オランダ", "フランス"],
+      answer: 1,
+      explanation: "せいかい！オランダごの『ランセル』が にほんで『ランドセル』になったよ！"
+    },
+    parent_note: "幕末に幕府が洋式軍隊を導入した際、兵士の背嚢（オランダ語でransel）を採用したのが始まり。明治20年、内閣総理大臣だった伊藤博文が大正天皇の学習院初等科ご入学祝いに特注の箱型通学鞄を献上したのが、現在のランドセルの原型です。"
+  },
+  {
+    id: "pan",
+    name: "パン",
+    reading: "ぱん",
+    category: "たべもの",
+    icon: "🍞",
+    badge: "ポルトガルから きたよ",
+    origin: {
+      country: "ポルトガル",
+      country_flag: "🇵🇹",
+      original_word: "パオ (pão)",
+      meaning: "こむぎこを やいた たべもの",
+      story: "むかし（せんごくじだい）、ポルトガルから ふねにのって やってきた ひとたちが もってきた たべものが『パオ』！これが『パン』になったよ！"
+    },
+    history_steps: [
+      {
+        era: "450ねん まえ（せんごく時代）",
+        badge: "むかしの すがた",
+        image: "🍞",
+        title: "カチカチの かたい パン",
+        text: "ながい あいだ くさらないように、ビスケットみたいに カチカチにかたい パンだったよ。おだのぶながも たべたかも？"
+      },
+      {
+        era: "150ねん まえ（めいじ時代）",
+        badge: "ちょっと まえ",
+        image: "🥯",
+        title: "あんパンの たんじょう！",
+        text: "にほんじんの くちにあうように、なかに『あんこ』を いれた『あんパン』が はつめいされて だいにんきに！"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🥪🥐",
+        title: "ふわふわで いっぱい！",
+        text: "メロンパンや カレーパン、サンドイッチなど、せかいじゅうの おいしい パンが たべられるよ。"
+      }
+    ],
+    trivia: [
+      "えいごでは パンのことを『ブレッド（bread）』というよ。アメリカで『パン！』と いっても つうじないんだ！",
+      "パンには『ちぎって みんなで わけあう たべもの』という すてきな いみもあるよ。"
+    ],
+    quiz: {
+      question: "えいごで『パン』は なんて いうでしょう？",
+      options: ["ブレッド", "ライス", "ケーキ"],
+      answer: 0,
+      explanation: "せいかい！えいごでは『ブレッド（bread）』だよ。『パン』はポルトガルごなんだね！"
+    },
+    parent_note: "1543年の鉄砲伝来とともにポルトガル人宣教師らによって日本へ持ち込まれました。主食として定着したのは明治以降で、木村屋創業者の木村安兵衛が酒種を使った『あんパン』を開発したことで爆発的に庶民に普及しました。"
+  },
+  {
+    id: "post",
+    name: "ポスト",
+    reading: "ぽすと",
+    category: "まちのなか",
+    icon: "📮",
+    badge: "イギリス・えいごから きたよ",
+    origin: {
+      country: "イギリス",
+      country_flag: "🇬🇧",
+      original_word: "ポスト (post / postbox)",
+      meaning: "てがみを おくるところ",
+      story: "てがみをおくる えいごの『ポスト（post）』から きたよ！むかしは『てがみばこ』や『しょじょうばこ』と よばれていたんだ。"
+    },
+    history_steps: [
+      {
+        era: "150ねん まえ（めいじ時代）",
+        badge: "むかしの すがた",
+        image: "🪵",
+        title: "くろくて きの はこだった！",
+        text: "さいしょの ポストは なんと『くろい きの はこ』だったよ！よるになると みえなくて ぶつかるひとが いたんだって。"
+      },
+      {
+        era: "100ねん まえ（たいしょう・しょうわ）",
+        badge: "ちょっと まえ",
+        image: "📮",
+        title: "まるくて あかい ポスト！",
+        text: "よるでも よく みえるように『あかいろ』になって、まるい つつがたの ポストが まちじゅうに たったよ。"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "📮✨",
+        title: "しかくい あかい ポスト！",
+        text: "てがみを たくさん いれられるように、しかくい かたちになったよ。あたまに かわいい キャラクターが のっている ポストもあるよ！"
+      }
+    ],
+    trivia: [
+      "ポストが あかいのは、まちのなかで いちばん めだって みつけやすいからなんだよ！",
+      "うみの そこの ふかいところに ある『かいていポスト』も 日本にあるんだよ！"
+    ],
+    quiz: {
+      question: "さいしょの 日本のポストは なにいろ だったでしょう？",
+      options: ["あおいろ", "きいろ", "くろいろ"],
+      answer: 2,
+      explanation: "せいかい！むかしは『くろい きの はこ』だったから、よるに みえにくかったんだよ！"
+    },
+    parent_note: "1871年（明治4年）の郵便制度開始時は木製の黒塗り箱（書状集箱）でした。夜間に見えにくく汚物箱と間違えられることもあったため、1908年に目立つ赤色の丸型ポストが登場し全国に定着しました。"
+  },
+  {
+    id: "enpitsu",
+    name: "えんぴつ",
+    reading: "えんぴつ",
+    category: "がっこう・ぶんぼうぐ",
+    icon: "✏️",
+    badge: "にほんご（かんじ）から きたよ",
+    origin: {
+      country: "にほん（昔のことば）",
+      country_flag: "🇯🇵",
+      original_word: "鉛（なまり）の 筆（ふで）",
+      meaning: "くろい いしで できた ふで",
+      story: "むかしの ひとは、もじを『ふで（筆）』で かいていたよ。なまりに にた くろい いし（こくえん）で つくった ふで だから『鉛筆（えんぴつ）』と なづけたんだ！"
+    },
+    history_steps: [
+      {
+        era: "400ねん まえ（えど時代のはじめ）",
+        badge: "むかしの すがた",
+        image: "🪵✏️",
+        title: "とくがわいえやす が つかった！",
+        text: "がいこくから とくがわいえやす に プレゼントされた えんぴつが、日本で いちばん ふるい えんぴつだよ。"
+      },
+      {
+        era: "100ねん まえ（たいしょう・しょうわ）",
+        badge: "ちょっと まえ",
+        image: "✏️",
+        title: "みんなが がっこうで つかうように！",
+        text: "き を けずって つかう えんぴつが たくさん つくられて、小学生の あいぼうに なったよ。"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "✏️🌈",
+        title: "にぎりやすい えんぴつ！",
+        text: "さんかくの かたちで もちやすい えんぴつや、おれない えんぴつ、カラフルな いろえんぴつが いっぱい！"
+      }
+    ],
+    trivia: [
+      "えんぴつ 1ぽんで、なんと 50キロメートル（となりの まちまで いけるくらい）の ながい せんが かけるんだよ！",
+      "えんぴつの しんは、なまえに『なまり』と ついているけど、なまりではなく『たんそ（炭）』の なかまだよ！"
+    ],
+    quiz: {
+      question: "えんぴつ 1ぽんで、どれくらいの ながさの せんが かける？",
+      options: ["100メートル", "5キロメートル", "50キロメートル"],
+      answer: 2,
+      explanation: "せいかい！50キロメートルも かけるんだよ！くるまで 1じかん はしるくらいの ながさだね！"
+    },
+    parent_note: "英語の『pencil』はラテン語で『尾（細い筆）』を意味するpenicillusが語源。日本語の『鉛筆』は芯の原料である黒鉛（石墨）が鉛に似ていたことから命名されました。徳川家康の遺品として久能山東照宮に遺るものが日本最古とされます。"
+  },
+  {
+    id: "keshigomu",
+    name: "けしごむ",
+    reading: "けしごむ",
+    category: "がっこう・ぶんぼうぐ",
+    icon: "🧼",
+    badge: "パンの かわりに できたよ",
+    origin: {
+      country: "イギリス",
+      country_flag: "🇬🇧",
+      original_word: "ラバー (rubber) / けすゴム",
+      meaning: "こすって けす ゴム",
+      story: "けしごむが はつめいされる まえ、ひとは なんと『パン』で えんぴつの じ を けしていたんだよ！あるひ ゴムで こすったら きれいに きえて びっくり！"
+    },
+    history_steps: [
+      {
+        era: "250ねん まえ（むかし）",
+        badge: "むかしの すがた",
+        image: "🍞",
+        title: "パンを ちぎって けしていた！",
+        text: "えんぴつを けすときは、やわらかい パンの なかみを まるめて こすっていたんだよ。たべものを つかっていたんだね！"
+      },
+      {
+        era: "100ねん まえ（しょうわの はじめ）",
+        badge: "ちょっと まえ",
+        image: "🧽",
+        title: "てんねんの ゴムの けしごむ",
+        text: "ゴムの き から とった ゴムで つくっていたけれど、すこし かたくて かみが やぶれることも あったよ。"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🧼✨",
+        title: "プラスチックで よくきえる！",
+        text: "いまの けしごむは プラスチックで できていて、かるい ちからで まっしろに きえるんだよ！"
+      }
+    ],
+    trivia: [
+      "びじゅつ（絵をかくひと）は、いまでも デッサンを するときに『パン』をつかって え を けすことがあるよ！",
+      "えいごの『ラバー（rubber）』は、『こするもの（rubするもの）』という いみなんだよ。"
+    ],
+    quiz: {
+      question: "けしごむが できる まえ、みんなは なにで えんぴつを けしていた？",
+      options: ["パン", "バナナのかわ", "ティッシュ"],
+      answer: 0,
+      explanation: "せいかい！パンの やわらかい ところで こすって けしていたんだよ！"
+    },
+    parent_note: "1770年にイギリスの化学者ジョゼフ・プリーストリーが、天然ゴムで鉛筆の線を消せることを発見しました。それ以前はパン粉（ちぎったパンの白い部分）を使って消していました。"
+  },
+  {
+    id: "jitensha",
+    name: "じてんしゃ",
+    reading: "じてんしゃ",
+    category: "のりもの",
+    icon: "🚲",
+    badge: "じぶんで ころがる くるま！",
+    origin: {
+      country: "にほん（名づけ）/ ドイツ（発明）",
+      country_flag: "🇩🇪",
+      original_word: "自（じぶん）で 転（ころがる） 車（くるま）",
+      meaning: "じぶんの ちからで すすむ のりもの",
+      story: "ドイツの ひとは『走る機械（ドライジーネ）』と よんでいたけれど、日本に やってきたとき『じぶんの ちからで くるくる まわって すすむ くるま』だから『自転車』と なづけられたよ！"
+    },
+    history_steps: [
+      {
+        era: "200ねん まえ（むかし）",
+        badge: "むかしの すがた",
+        image: "🪵🚲",
+        title: "ペダルが なかった！",
+        text: "さいしょの じてんしゃは、あしで じめんを けって はしる『き の のりもの』だったよ！"
+      },
+      {
+        era: "150ねん まえ（めいじ時代）",
+        badge: "ちょっと まえ",
+        image: "🚴‍♂️",
+        title: "まえの タイヤが でっかい！",
+        text: "スピードを だすために、まえの タイヤだけが おとなの せのたけ くらい おおきい じてんしゃが はやったよ。"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🚲⚡️",
+        title: "でんきで スイスイ！",
+        text: "おなじ おおきさの ２つの タイヤになって、いまは でんきモーターで さかみちも らくらく のぼれるよ！"
+      }
+    ],
+    trivia: [
+      "さいしょの じてんしゃは、うま（馬）が たべものを たべられなくなった としに、うまの かわりとして はつめいされたんだよ！",
+      "せかいで いちばん じてんしゃが おおい くには オランダだよ。"
+    ],
+    quiz: {
+      question: "いちばん さいしょの じてんしゃは、どうやって うごかしていた？",
+      options: ["ペダルを こぐ", "あしで じめんを ける", "プロペラを まわす"],
+      answer: 1,
+      explanation: "せいかい！ペダルが なかったから、あしで じめんを けって はしっていたんだよ！"
+    },
+    parent_note: "1817年にドイツのカール・フォン・ドライス男爵が発明した『ドライジーネ』が原型。日本では明治初期に『自転車』という名称が定着しました。前輪が巨大なペニー・ファージング型を経て、現在の安全型自転車（セーフティバイシクル）へ進化しました。"
+  },
+  {
+    id: "chokore-to",
+    name: "チョコレート",
+    reading: "ちょこれーと",
+    category: "たべもの",
+    icon: "🍫",
+    badge: "メキシコ（アステカ）から きたよ",
+    origin: {
+      country: "メキシコ（アステカ）",
+      country_flag: "🇲🇽",
+      original_word: "ショコラトル (xocolatl)",
+      meaning: "にがい みず（のみもの）",
+      story: "むかしの メキシコでは、カカオの み を すりつぶして、とうがらしを いれた『にがくて からい のみもの（ショコラトル）』を のんでいたんだ！あまくなかったんだよ！"
+    },
+    history_steps: [
+      {
+        era: "1000ねん まえ（大むかし）",
+        badge: "むかしの すがた",
+        image: "☕️🌶️",
+        title: "にがくて からい くすり！",
+        text: "げんきが でる くすりとして、おうさまや えらい ひとだけが のめる とくべつな にがい のみものだったよ。"
+      },
+      {
+        era: "200ねん まえ（ヨーロッパ）",
+        badge: "ちょっと まえ",
+        image: "🍫",
+        title: "おさとうと ミルクで あまくなった！",
+        text: "ヨーロッパに つたわって、おさとう や ミルクを まぜて『たべる あまい チョコレート』が つくられたよ！"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🍫✨",
+        title: "せかいじゅうの あまい おかし！",
+        text: "いたチョコや トリュフ、アイスクリームなど、みんなが だいすきな おかしの おうさまに なったよ。"
+      }
+    ],
+    trivia: [
+      "むかしの メキシコでは、カカオの つぶが『おかね』として つかわれていて、カカオ100つぶで どれいが かえたんだって！",
+      "ホワイトチョコレートは、カカオの なかの『しろい あぶら（カカオバター）』で つくられているよ。"
+    ],
+    quiz: {
+      question: "大むかしの チョコレートは どんな あじ だった？",
+      options: ["とても あまい", "にがくて からい", "すっぱい"],
+      answer: 1,
+      explanation: "せいかい！おさとうが 入っていなくて、とうがらしを 入れていたから にがくて からかったんだよ！"
+    },
+    parent_note: "古代メソアメリカ（アステカ文明など）で神々の飲み物として珍重された『ショコラトル（苦い水）』が語源。大航海時代にスペインに伝わり、砂糖を加えて温かい甘い飲み物となり、19世紀のイギリス・スイスで固形チョコレートへと進化しました。"
+  },
+  {
+    id: "kasutera",
+    name: "カステラ",
+    reading: "かすてら",
+    category: "たべもの",
+    icon: "🍰",
+    badge: "スペインのお城から きたよ",
+    origin: {
+      country: "スペイン / ポルトガル",
+      country_flag: "🇪🇸",
+      original_word: "パオ・デ・カスティーリャ (pão de Castela)",
+      meaning: "カスティーリャ王国のお城のパン",
+      story: "ポルトガルから やってきた ひとが『これは カスティーリャ（むかしの スペインの おうこく）の パンですよ』と おしえてくれたのが『カステラ』と きこえたんだ！"
+    },
+    history_steps: [
+      {
+        era: "450ねん まえ（せんごく時代）",
+        badge: "むかしの すがた",
+        image: "🍰",
+        title: "ながさき に やってきた！",
+        text: "ポルトガルの ふねが ながさき に もってきたよ。たまご と こむぎこ と おさとう で つくる めずらしい おかしだったよ。"
+      },
+      {
+        era: "200ねん まえ（えど時代）",
+        badge: "ちょっと まえ",
+        image: "🍯🍰",
+        title: "みずあめを いれて しっとり！",
+        text: "日本の しょくにんさんが、みずあめ や ハチミツを いれて、いまのような しっとりした カステラを はつめいしたよ！"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🍰✨",
+        title: "したの ザラメが おいしい！",
+        text: "ながさきの めいぶつ として、日本じゅうで あいされているよ。したの ジャリジャリした おさとう（ザラメ）が にんき！"
+      }
+    ],
+    trivia: [
+      "カステラは、スペインや ポルトガルに いっても『カステラ』という なまえの おかしは ないんだよ！日本で しんかしたんだね。",
+      "むかしは おさとう が とても たかかったので、カステラは お金もちしか たべられない ごちそうだったよ。"
+    ],
+    quiz: {
+      question: "『カステラ』という なまえは、もともと なんの なまえだった？",
+      options: ["おうさまの なまえ", "くに（王国）の なまえ", "うみの なまえ"],
+      answer: 1,
+      explanation: "せいかい！むかし スペインに あった『カスティーリャ王国』という くにの なまえから きたよ！"
+    },
+    parent_note: "室町末期にポルトガル人宣教師が長崎へ伝えた南蛮菓子。スペインの旧カスティリャ王国で作られていたパン（Pão de Castela）が語源とされます。日本独自の水飴やみりんを加える製法で進化し、現在の長崎カステラが完成しました。"
+  },
+  {
+    id: "piano",
+    name: "ピアノ",
+    reading: "ぴあの",
+    category: "がっき・おんがく",
+    icon: "🎹",
+    badge: "イタリアから きたよ",
+    origin: {
+      country: "イタリア",
+      country_flag: "🇮🇹",
+      original_word: "クラヴィチェンバロ・コル・ピアノ・エ・フォルテ",
+      meaning: "よわい音（ピアノ）も つよい音（フォルテ）も 出る楽器",
+      story: "ピアノの ほんとうの なまえは『ピアノフォルテ』！イタリアごで『ピアノ＝ちいさな音』『フォルテ＝おおきな音』。どちらも だせる すごい がっき だから なづけられたよ！"
+    },
+    history_steps: [
+      {
+        era: "300ねん まえ（イタリア）",
+        badge: "むかしの すがた",
+        image: "🎹",
+        title: "音の おおきさを かえられた！",
+        text: "それまでの がっきは、つよく ひいても ちいさく ひいても おなじ おおきさの 音しか でなかったんだ。ピアノは ちからかげんで 音が かわる スーパーがっきだった！"
+      },
+      {
+        era: "100ねん まえ（日本）",
+        badge: "ちょっと まえ",
+        image: "🏫🎹",
+        title: "がっこうの おんがくしつ へ！",
+        text: "日本でも ピアノが つくられるようになり、しょうがっこうの おんがくしつに 1つずつ おかれるようになったよ。"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🎹🎧",
+        title: "でんしピアノで ヘッドホンも！",
+        text: "ヘッドホンを つけて よるでも れんしゅうできる でんしピアノや、じどうで えんそうする ピアノもあるよ。"
+      }
+    ],
+    trivia: [
+      "ピアノには、しろい けんばんと くろい けんばんが あわせて『88こ』あるよ！",
+      "ピアノの なかには、200ぽんいじょうの はがねの げん（ピアノせん）が はってあって、ゾウが 2とう のっても だいじょうぶなくらい つよく ひっぱられているよ！"
+    ],
+    quiz: {
+      question: "おんがくの ことばで『ピアノ』は どういう いみでしょう？",
+      options: ["おおきい音", "ちいさい（しずかな）音", "はやい音"],
+      answer: 1,
+      explanation: "せいかい！イタリアごで『ピアノ』は『しずかに・よわく』という意味だよ！"
+    },
+    parent_note: "1700年頃、イタリアのチェンバロ製作家バルトロメオ・クリストフォリが発明。当時の正式名称は『Gravicembalo col piano e forte（弱音も強音も出せるチェンバロ）』。これが略されて『ピアノ』と呼ばれるようになりました。"
+  },
+  {
+    id: "koppu",
+    name: "コップ",
+    reading: "こっぷ",
+    category: "いえのなか",
+    icon: "🥛",
+    badge: "オランダから きたよ",
+    origin: {
+      country: "オランダ",
+      country_flag: "🇳🇱",
+      original_word: "コップ (kop)",
+      meaning: "あたま・うつわ・カップ",
+      story: "オランダの ふねが やってきたとき、のみものを のむ ガラスや やきものの うつわを『コップ』と いっていたのが そのまま 日本の ことばになったよ！"
+    },
+    history_steps: [
+      {
+        era: "400ねん まえ（えど時代）",
+        badge: "むかしの すがた",
+        image: "🏺",
+        title: "ガラスの めずらしい うつわ",
+        text: "むかしの 日本の ひとは、おわん や ゆのみ を つかっていたから、すきとおった ガラスの コップに びっくりしたよ。"
+      },
+      {
+        era: "100ねん まえ（たいしょう・しょうわ）",
+        badge: "ちょっと まえ",
+        image: "🥛",
+        title: "ぎゅうにゅうびん と コップ",
+        text: "みんなの おうちでも、すきとおった ガラスの コップで みず や ぎゅうにゅうを のむのが あたりまえに！"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🥤✨",
+        title: "われない プラスチックや かみコップ",
+        text: "おとしても われない プラスチックの コップや、ピクニックで つかう かみの コップなど、いろんな コップがあるよ。"
+      }
+    ],
+    trivia: [
+      "えいごでは『カップ（cup）』または『グラス（glass）』というよ。とってが ついているのが『カップ』、とってが なくて つめたいものを のむのが『グラス』だよ！",
+      "コップ座（ざ）という、ほしの なまえもあるんだよ！"
+    ],
+    quiz: {
+      question: "えいごで あたたかい スープなどを のむ とって付きの コップを なんていう？",
+      options: ["カップ", "グラス", "ボトル"],
+      answer: 0,
+      explanation: "せいかい！えいごでは とってがあるものを『カップ』、ガラスでできているものを『グラス』というよ！"
+    },
+    parent_note: "オランダ語の『kop（カップ、頭杯）』が語源。江戸時代に出島を通じて伝来しました。英語のcupと同源ですが、日本語では取っ手のない円筒形の容器全般をコップと呼ぶ独自の使い分けが定着しています。"
+  },
+  {
+    id: "no-to",
+    name: "ノート",
+    reading: "のーと",
+    category: "がっこう・ぶんぼうぐ",
+    icon: "📓",
+    badge: "えいごから きたよ",
+    origin: {
+      country: "イギリス・アメリカ",
+      country_flag: "🇬🇧",
+      original_word: "ノートブック (notebook)",
+      meaning: "おぼえておくための ほん",
+      story: "えいごの『ノート（note＝めもをする）』と『ブック（book＝ほん）』が ガッチャンコした『ノートブック』を、みじかく『ノート』と よぶようになったよ！"
+    },
+    history_steps: [
+      {
+        era: "150ねん まえ（めいじ時代）",
+        badge: "むかしの すがた",
+        image: "📜",
+        title: "わし を ひもで とじた！",
+        text: "さいしょは 日本の『和紙（わし）』を ひもで むすんだ『とじほん』に、ふで や えんぴつで かいていたよ。"
+      },
+      {
+        era: "50ねん まえ（しょうわ）",
+        badge: "ちょっと まえ",
+        image: "📓",
+        title: "ジャポニカがくしゅうちょう！",
+        text: "ひょうしに むし や はな の しゃしんが ついた、小学生のための『がくしゅうちょう』が だいにんきに！"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "📱📓",
+        title: "タブレットや けせるノート！",
+        text: "かみの ノートだけでなく、がっこうの タブレットに ペンで かく『デジタルノート』も つかうようになったよ。"
+      }
+    ],
+    trivia: [
+      "ノートの はじっこに ある『あかい せん（マージン）』は、むかし ネズミが かみの はしっこを かじっても、じ が きえないように ひかれたんだって！",
+      "ノートの いちばん うしろの ページは、なぜか おえかきしたくなるよね！"
+    ],
+    quiz: {
+      question: "ノートの はじっこにある あかい せんは、むかし なにの たいさくだった？",
+      options: ["ネズミにかじられる", "あめでぬれる", "かぜでとぶ"],
+      answer: 0,
+      explanation: "せいかい！むかし ネズミが はしっこを かじって ボロボロにしても、じ が よめるように はじっこを あけていたんだよ！"
+    },
+    parent_note: "英語の『notebook』の短縮形。明治時代初期に洋紙の輸入とともに普及しました。初期の学習帳は無地でしたが、大正時代以降にマス目や罫線が引かれ、1970年のジャポニカ学習帳登場で児童向けノート文化が完成しました。"
+  },
+  {
+    id: "kare-",
+    name: "カレー",
+    reading: "かれー",
+    category: "たべもの",
+    icon: "🍛",
+    badge: "インドと イギリスから きたよ",
+    origin: {
+      country: "インド 🇮🇳 / イギリス 🇬🇧",
+      country_flag: "🇮🇳",
+      original_word: "カリ (kari / タミル語)",
+      meaning: "スパイスで にこんだ ソース・具",
+      story: "みなみインドの ことばで『ソース』を いみする『カリ』を、イギリスの ひとが『カレー』と よび、それが 日本に やってきたよ！"
+    },
+    history_steps: [
+      {
+        era: "150ねん まえ（めいじ時代）",
+        badge: "むかしの すがた",
+        image: "🍛🐸",
+        title: "カエルが 入っていた！？",
+        text: "さいしょの ころの レシピには、なんと『カエルのおにく』を 入れると かいてあったんだって！びっくり！"
+      },
+      {
+        era: "100ねん まえ（たいしょう・しょうわ）",
+        badge: "ちょっと まえ",
+        image: "🥔🥕🧅",
+        title: "じゃがいも・にんじん・たまねぎ！",
+        text: "日本じゅうの おうちで つくれるように、カレールーが はつめいされて、にんきナンバーワンの ごはんになったよ。"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🍛✨",
+        title: "あまくち・ほしがたライス！",
+        text: "りんご や ハチミツが 入った あまくて おいしい こどもカレーなど、みんな だいすき！"
+      }
+    ],
+    trivia: [
+      "かいぐん（ふねの へいたいさん）は、ずっと うみの うえに いると なんようびか わすれちゃうので、毎週きんようびに カレーを たべるよ！",
+      "カレーうどん や カレーパンは、日本人が はつめいした オリジナルの たべものだよ！"
+    ],
+    quiz: {
+      question: "ふねの へいたいさんは、どうして きんようびに カレーを たべる？",
+      options: ["なんようびか おもいだすため", "カレーが あまるから", "げんきをもりもりだすため"],
+      answer: 0,
+      explanation: "せいかい！まいにち うみばかり みていると なんようびか わすれるので、きんようび＝カレーと きめたんだよ！"
+    },
+    parent_note: "南インドのタミル語で汁物・ソースを意味する『kari』が語源。イギリス東インド会社を通じて英国に持ち込まれ、カレールウとカレー粉が開発されました。日本へは明治初期に西洋料理として伝来し、海軍カレーなどを経て国民食となりました。"
+  },
+  {
+    id: "hasami",
+    name: "ハサミ",
+    reading: "はさみ",
+    category: "がっこう・ぶんぼうぐ",
+    icon: "✂️",
+    badge: "にほんご（はさむ）から きたよ",
+    origin: {
+      country: "にほん",
+      country_flag: "🇯🇵",
+      original_word: "挟む（はさむ）",
+      meaning: "ものを はさんで きる どうぐ",
+      story: "ものを ２つの は で『はさむ（挟む）』ことから『はさみ』と よばれるようになったよ！とても わかりやすい なづけだね！"
+    },
+    history_steps: [
+      {
+        era: "1000ねん まえ（平安時代）",
+        badge: "むかしの すがた",
+        image: "✂️",
+        title: "Ｕのじ の かたちだった！",
+        text: "いまの はさみと ちがって、バネのように つながった Ｕのじのかたちの『にぎりはさみ』だったよ。いまでも いと を きるときに つかうよ。"
+      },
+      {
+        era: "150ねん まえ（めいじ時代）",
+        badge: "ちょっと まえ",
+        image: "✂️⚔️",
+        title: "カタナの しょくにんさんが つくった！",
+        text: "ぶしが カタナを もたなくなって、カタナをつくっていた しょくにんさんが、切れ味バツグンの はさみを つくりはじめたよ。"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "✂️🛡️",
+        title: "て を きらない あんぜんはさみ！",
+        text: "さきっぽが まるくなっていて、こどもでも あんぜんにつかえる はさみや、のり が くっつかない はさみがあるよ！"
+      }
+    ],
+    trivia: [
+      "はさみは、きるときに『チョキチョキ』とおとが するよね。じゃんけんの『チョキ』は はさみの かたちだよ！",
+      "せかいで いちばん ふるい はさみは、なんと 3000ねん以上まえの 古代エジプトで つかわれていたんだって！"
+    ],
+    quiz: {
+      question: "じゃんけんの『チョキ』は、なんの かたちでしょう？",
+      options: ["はさみ", "カニの つめ", "きつねの みみ"],
+      answer: 0,
+      explanation: "せいかい！チョキは はさみ（鋏）の かたちだよ！"
+    },
+    parent_note: "物を両側から『挟む（はさむ）』動詞が名詞化した大和言葉。古代日本には中国からU字型の握り鋏が伝来。明治維新で廃刀令が出された後、刀鍛冶の職人たちがその高度な鍛造技術を活かして西洋式の洋鋏（交差式鋏）を作り始めた歴史があります。"
+  },
+  {
+    id: "kureyon",
+    name: "クレヨン",
+    reading: "くれよん",
+    category: "がっこう・ぶんぼうぐ",
+    icon: "🖍️",
+    badge: "フランスから きたよ",
+    origin: {
+      country: "フランス",
+      country_flag: "🇫🇷",
+      original_word: "クレヨン (crayon)",
+      meaning: "えんぴつ・チョーク（白亜）",
+      story: "フランスごで『えんぴつ』のことを『クレヨン』というよ！もともとは『チョークの いし（クレ）』から できた ことばなんだ。"
+    },
+    history_steps: [
+      {
+        era: "100ねん まえ（大正時代）",
+        badge: "むかしの すがた",
+        image: "🖍️",
+        title: "こどもの じゆう画のために！",
+        text: "おとなの まねではなく、こどもが じゆうに じぶんの すきな 絵を かけるように、日本に クレヨンが やってきたよ。"
+      },
+      {
+        era: "80ねん まえ（昭和時代）",
+        badge: "ちょっと まえ",
+        image: "🖍️🎨",
+        title: "クレパスの はつめい！",
+        text: "クレヨンと パステルを がったいさせた『クレパス』が 日本ではつめいされて、ぬりやすくなったよ！"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🖍️🧼",
+        title: "みずで おちる クレヨン！",
+        text: "つくえ や て に ついても みずで きれいに おちる クレヨンや、みつろう（ハチミツのワックス）で できた あんしんクレヨンもあるよ。"
+      }
+    ],
+    trivia: [
+      "フランスで『クレヨンを かして！』と いうと、ふつうの『くろいえんぴつ』を わたされちゃうよ！",
+      "クレヨンは ロウソクの『ロウ（ワックス）』と『色のこな』を まぜて つくられているよ。"
+    ],
+    quiz: {
+      question: "フランスごで『クレヨン』は なんの ことでしょう？",
+      options: ["えんぴつ", "クレヨン", "ふで"],
+      answer: 0,
+      explanation: "せいかい！フランスごで『クレヨン（crayon）』は『えんぴつ』のことなんだよ！"
+    },
+    parent_note: "フランス語の『crayon（鉛筆）』が語源で、元を辿ると白亜（チョーク）を意味するラテン語cretaに由来します。日本では大正時代に自由画教育運動とともに普及。その後サクラクレパスがクレヨンとパステルの長所を合わせた『クレパス』を独自開発しました。"
+  },
+  {
+    id: "densha",
+    name: "でんしゃ",
+    reading: "でんしゃ",
+    category: "のりもの",
+    icon: "🚃",
+    badge: "でんきで うごく くるま！",
+    origin: {
+      country: "にほん",
+      country_flag: "🇯🇵",
+      original_word: "電（でんき）の 車（くるま）",
+      meaning: "電気の ちからで 線路を はしる 車",
+      story: "むかしは けむりを もくもく 出す『きかんしゃ（SL）』だったけれど、『電気』の ちからで はしる ようになって『電車』と なづけられたよ！"
+    },
+    history_steps: [
+      {
+        era: "150ねん まえ（めいじ時代）",
+        badge: "むかしの すがた",
+        image: "🚂",
+        title: "もくもく じょうききかんしゃ！",
+        text: "せきたんを もやして、シューッともくもく けむりを はきながら はしる『SL（きかんしゃ）』が はじまりだったよ。"
+      },
+      {
+        era: "130ねん まえ（きょうと）",
+        badge: "ちょっと まえ",
+        image: "🚋",
+        title: "日本で さいしょの でんしゃ！",
+        text: "きょうとの まちの なかを、電気が ながれる 線を つかって ちいさな『チンチン電車』が はしりはじめたよ！"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🚅✨",
+        title: "超スピードの しんかんせん！",
+        text: "じそく300キロ以上で はしる しんかんせん や、ういて はしる リニアモーターカーまで できたよ！"
+      }
+    ],
+    trivia: [
+      "じつは、でんき ではなく ディーゼル（あぶら）で はしる れっしゃは、ほうりつでは『でんしゃ』ではないんだよ！",
+      "日本の でんしゃは、せかいで いちばん じかんどおりに 正確に はしることで 有名なんだよ！"
+    ],
+    quiz: {
+      question: "日本で さいしょに はしった でんしゃは どこの まち？",
+      options: ["とうきょう", "きょうと", "おおさか"],
+      answer: 1,
+      explanation: "せいかい！1895年に きょうと（京都）の まちを はしった 路面電車が さいしょの 電車だよ！"
+    },
+    parent_note: "電気を動力源として走る鉄道車両のこと。1895年に京都電気鉄道が開業したのが日本初の一般営業電車です。煙を出さずクリーンで加減速が速いことから大都市の通勤路線や新幹線へと発展しました。"
+  },
+  {
+    id: "surippa",
+    name: "スリッパ",
+    reading: "すりっぱ",
+    category: "いえのなか",
+    icon: "🩴",
+    badge: "えいご（すべる）から きたよ",
+    origin: {
+      country: "えいご 🇬🇧 / 発祥は日本 🇯🇵",
+      country_flag: "🇯🇵",
+      original_word: "スリップ (slip)",
+      meaning: "すべるように すっと はける はきもの",
+      story: "えいごで『すべる（slip）』から『スリッパ』！じつは、外国のひとが くつのまま たたみに 上がらないように、日本人が はつめいしたんだよ！"
+    },
+    history_steps: [
+      {
+        era: "150ねん まえ（めいじ時代のはじめ）",
+        badge: "むかしの すがた",
+        image: "👞🩴",
+        title: "くつの 上から はいていた！",
+        text: "日本にきた 外国のひとが、くつを ぬぐ しゅうかんが なかったので、くつの 上から スッポリ はける スリッパをつくったよ。"
+      },
+      {
+        era: "50ねん まえ（昭和時代）",
+        badge: "ちょっと まえ",
+        image: "🩴",
+        title: "おうちの なかで はくように！",
+        text: "フローリング（いたの ゆか）の おうちが ふえて、日本人も いえの なかで スリッパを はくようになったよ。"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🩴✨",
+        title: "もこもこ や つぼおし スリッパ！",
+        text: "ふゆに あたたかい もこもこスリッパや、あしの うらを ぎゅっと おしてくれる けんこうスリッパもあるよ!"
+      }
+    ],
+    trivia: [
+      "ホテルや りょかんで、スリッパを そろえて おくと、とても きもちがいいよね！",
+      "がっこうの たいいくかんで はく『うわばき』も、スリッパの なかまだよ！"
+    ],
+    quiz: {
+      question: "スリッパは もともと なんのために はつめいされた？",
+      options: ["さむさを ふせぐため", "外国人が くつのまま たたみに入らないため", "あしの うらを きたえるため"],
+      answer: 1,
+      explanation: "せいかい！くつを ぬぐ しゅうかんが ない外国人が、くつの 上から はけるように つくられたんだよ！"
+    },
+    parent_note: "英語のslip（滑る、すっと履く）に由来する名詞slipper。明治初期、東京の仕立職人・徳野利三郎が、土足文化の西洋人が靴を履いたまま畳敷きの宿に上がってトラブルになるのを防ぐため、靴の上から履く上履きとして考案した日本発祥の履物です。"
+  },
+  {
+    id: "terebi",
+    name: "テレビ",
+    reading: "てれび",
+    category: "いえのなか",
+    icon: "📺",
+    badge: "ギリシャ語とラテン語の合体！",
+    origin: {
+      country: "ギリシャ 🇬🇷 / フランス 🇫🇷",
+      country_flag: "🇬🇷",
+      original_word: "テレビジョン (television)",
+      meaning: "テレ（とおく）＋ビジョン（みえる）",
+      story: "ギリシャごの『テレ（とおく）』と、ラテンごの『ビジョン（みえる）』が くっついてできたよ！『とおくの けしきが みえる ふしぎな はこ』という意味だよ！"
+    },
+    history_steps: [
+      {
+        era: "100ねん まえ（むかし）",
+        badge: "むかしの すがた",
+        image: "📺",
+        title: "『イ』の １文字が うつった！",
+        text: "日本の はかせが、せかいで はじめて テレビのがめんに『イ』という かたかなを うつすことに せいこうしたよ！"
+      },
+      {
+        era: "70ねん まえ（昭和時代）",
+        badge: "ちょっと まえ",
+        image: "📺📦",
+        title: "しろくろ で おもたい はこ！",
+        text: "いろが ついていない『しろくろテレビ』で、うしろが でっかく 出っぱった まほうの はこ だったよ。"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "📺✨",
+        title: "うすくて おおきな がめん！",
+        text: "かべに かけられるくらい うすくなって、ユーチューブや アニメも ４Ｋの きれいな えいぞうで みられるよ！"
+      }
+    ],
+    trivia: [
+      "日本で さいしょに テレビに うつされた もじは、いろはにほへと の『イ』だったんだよ！",
+      "テレビの リモコンは、めの みえない『あかぐわいせん（赤外線）』の ひかりで ごうずを おくっているよ！"
+    ],
+    quiz: {
+      question: "テレビの『テレ』は、どういう いみでしょう？",
+      options: ["おおきい", "とおく", "あかるい"],
+      answer: 1,
+      explanation: "せいかい！ギリシャごで『テレ』は『とおく』という意味！でんわ（テレフォン）も おなじだよ！"
+    },
+    parent_note: "ギリシャ語のtele（遠く）とラテン語のvisio（視界・見ること）を組み合わせた造語。1926年、日本の高柳健次郎技師が世界で初めてブラウン管に『イ』の字を表示させる実験に成功し、テレビ開発の父の一人と称されています。"
+  },
+  {
+    id: "tisshu",
+    name: "ティッシュ",
+    reading: "てぃっしゅ",
+    category: "いえのなか",
+    icon: "🧻",
+    badge: "フランスから きたよ",
+    origin: {
+      country: "フランス",
+      country_flag: "🇫🇷",
+      original_word: "ティシュ (tissu)",
+      meaning: "うすく おられた ぬの",
+      story: "フランスごで『うすい おりもの（ぬの）』という いみだよ！ぬの みたいに やわらかくて はだに やさしい かみ だから ティッシュと よばれるよ！"
+    },
+    history_steps: [
+      {
+        era: "100ねん まえ（第一次世界大戦）",
+        badge: "むかしの すがた",
+        image: "🩹",
+        title: "けがの ほうたい だった！",
+        text: "さいしょは びょういんで けがをした へいたいさんの きずぐちに あてる ガーゼの かわりだったよ。"
+      },
+      {
+        era: "60ねん まえ（昭和時代）",
+        badge: "ちょっと まえ",
+        image: "📦🧻",
+        title: "はこから シュッと でる！",
+        text: "1まい とると つぎの 1まいが ピョコッと でてくる べんりな はこ入りティッシュが 日本に とうじょう！"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🧻✨",
+        title: "ローション入りの ふわふわ！",
+        text: "かぜを ひいて なんかい はなを かんでも いたくならない、うるおい成分が 入った ふわふわティッシュもあるよ！"
+      }
+    ],
+    trivia: [
+      "ティッシュは みずにとけないから、トイレに ながしちゃダメだよ！（トイレットペーパーは 水にとけるよ）",
+      "まちなかで くばっている『ポケットティッシュ』は、日本人が はつめいした せかいに ほこる アイデアなんだよ！"
+    ],
+    quiz: {
+      question: "まちなかで ただで もらえる『ポケットティッシュ』は どこの くにで 生まれた？",
+      options: ["日本", "アメリカ", "フランス"],
+      answer: 0,
+      explanation: "せいかい！こうこくを 入れて まちで くばる ポケットティッシュは、日本の ひとが かんがえたんだよ！"
+    },
+    parent_note: "フランス語のtissu（織物、編んだ布）が語源。元々は第一次世界大戦時の医療用脱脂綿の代用品として開発されたセルロース綿製品でした。街頭で配られる広告付きポケットティッシュは1960年代後半に日本の明星産商が発案した独自文化です。"
+  },
+  {
+    id: "ikura",
+    name: "イクラ",
+    reading: "いくら",
+    category: "たべもの",
+    icon: "🍣",
+    badge: "ロシアから きたよ",
+    origin: {
+      country: "ロシア",
+      country_flag: "🇷🇺",
+      original_word: "イクラー (ikra)",
+      meaning: "さかなの たまご",
+      story: "ロシアごで『さかなの たまご』全般を『イクラー』というよ！ロシアの ひとから つくりかたを おしえてもらったとき、そのまま イクラと よぶようになったよ！"
+    },
+    history_steps: [
+      {
+        era: "100ねん まえ（大正時代）",
+        badge: "むかしの すがた",
+        image: "🐟",
+        title: "すじこ から イクラへ！",
+        text: "むかしの 日本では、まくにつつまれた『すじこ』で たべていたけれど、ロシアのひとに ひと粒ずつ ほぐす やりかたを ならって イクラが たんじょう！"
+      },
+      {
+        era: "50ねん まえ（昭和時代）",
+        badge: "ちょっと まえ",
+        image: "🍣",
+        title: "ぐんかんまき で おすしに！",
+        text: "のりを まいた すしめしの うえに のせる『ぐんかんまき』で、おすしやさんの にんきものに なったよ。"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "🍚✨",
+        title: "キラキラ プチプチの ほうせき！",
+        text: "『うみの ルビー』とも よばれて、いくら丼や てまりずし など、おいしくて キラキラな ごちそうだね！"
+      }
+    ],
+    trivia: [
+      "ロシアでは、サケのたまごだけでなく、タラコも キャビアも ぜんぶ『イクラー』と よぶよ！",
+      "イクラを あたたかい おゆに つけると、たまごの タンパク質がかたまって『しろく』にごるよ！"
+    ],
+    quiz: {
+      question: "ロシアで『キャビア（チョウザメのたまご）』は なんて よばれている？",
+      options: ["くろい イクラ", "プレミアム キャビア", "ブラック フィッシュ"],
+      answer: 0,
+      explanation: "せいかい！ロシアでは 魚のたまごは 全部イクラーなので、チョウザメのたまごは『くろいイクラ』というよ！"
+    },
+    parent_note: "ロシア語のikra（魚卵全般）が語源。大正時代、ロシア革命の動乱期に日本軍がロシアからサケの卵を粒ごとに塩漬け・醤油漬けにする製法を学んだ際に定着しました。筋子（すじこ）と区別して粒状のものをイクラと呼びます。"
+  },
+  {
+    id: "kamera",
+    name: "カメラ",
+    reading: "かめら",
+    category: "いえのなか",
+    icon: "📷",
+    badge: "ラテン語（くらいへや）から きたよ",
+    origin: {
+      country: "ラテン語 / イタリア 🇮🇹",
+      country_flag: "🇮🇹",
+      original_word: "カメラ・オブスクラ (camera obscura)",
+      meaning: "くらい へや（部屋）",
+      story: "ラテンごで『カメラ＝へや（部屋）』『オブスクラ＝くらい（暗い）』という意味！まっくらな へやの ちいさな あなから 光が 入ると、そとの けしきが うつる ふしぎから 生まれたよ！"
+    },
+    history_steps: [
+      {
+        era: "500ねん まえ（大むかし）",
+        badge: "むかしの すがた",
+        image: "⛺️",
+        title: "人が 入れる おおきな へや！",
+        text: "えかきさんが 絵を なぞって かくための、人が すっぽり 入れる まっくらな テントや へや だったよ。"
+      },
+      {
+        era: "100ねん まえ（たいしょう・昭和）",
+        badge: "ちょっと まえ",
+        image: "📷🎞️",
+        title: "フィルムで パシャリ！",
+        text: "フィルムという とくべつな テープに やきつけて、しゃしんやさんで げんぞう してもらっていたよ。"
+      },
+      {
+        era: "いま",
+        badge: "いまの すがた",
+        image: "📱✨",
+        title: "スマホで なんまいでも パシャッ！",
+        text: "スマホの なかに ちいさな カメラが 入って、とった しゃしんを すぐに おじいちゃんや おばあちゃんに おくれるよ！"
+      }
+    ],
+    trivia: [
+      "カメラの『シャッターのおと（カシャッ）』は、いまの スマホでは スピーカーから 出している『にせもののおと』なんだよ！",
+      "せかいで さいしょの しゃしんは、1まい とるのに『8じかん』も カメラを じっと おいていたんだって！"
+    ],
+    quiz: {
+      question: "『カメラ』は もともと なんの いみ だったでしょう？",
+      options: ["まほうの はこ", "へや（部屋）", "かがみ"],
+      answer: 1,
+      explanation: "せいかい！ラテンごで『カメラ』は『へや（部屋）』という意味だよ！"
+    },
+    parent_note: "ラテン語の『camera obscura（暗い部屋）』が語源。暗室の壁に開けた小さな穴（ピンホール）から外の景色が逆さに投影される現象を画家の写生補助具として使ったのが起源で、感光材料の発明によって写真機へと発展しました。"
+  }
+];
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { ZUKAN_DATA };
+}
+
+</script>
+  <script>
+// もののなまえ はじまり図鑑 - メインロジック
+// 音声入力・音声読み上げ・タイムトラベル演出・クイズ・AI拡張
+
+let currentItem = null;
+let isSpeaking = false;
+let recognition = null;
+let currentCategory = 'all';
+
+// カタカナ⇔ひらがな変換（「ぱん」で検索しても「パン」がヒットするように）
+function toHiragana(str) {
+  return str.replace(/[\u30A1-\u30F6]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) - 0x60)
+  );
+}
+function toKatakana(str) {
+  return str.replace(/[\u3041-\u3096]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) + 0x60)
+  );
+}
+function normalizeQuery(str) {
+  return toHiragana(str).toLowerCase().trim();
+}
+
+// DOM要素
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+const micBtn = document.getElementById('mic-btn');
+const itemGrid = document.getElementById('item-grid');
+const warpOverlay = document.getElementById('warp-overlay');
+const warpText = document.getElementById('warp-text');
+const homeView = document.getElementById('home-view');
+const detailView = document.getElementById('detail-view');
+const backBtn = document.getElementById('back-btn');
+const speakBtn = document.getElementById('speak-btn');
+const catTabs = document.querySelectorAll('.cat-tab');
+
+// 初期化
+document.addEventListener('DOMContentLoaded', () => {
+  renderGrid(ZUKAN_DATA);
+  setupSpeechRecognition();
+  setupEventListeners();
+  loadApiKey();
+});
+
+// イベントリスナー設定
+function setupEventListeners() {
+  // 検索フォーム送信
+  const searchForm = document.getElementById('search-form');
+  searchForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleSearch(searchInput.value.trim());
+  });
+
+  // 音声入力ボタン
+  micBtn.addEventListener('click', toggleVoiceInput);
+
+  // 戻るボタン
+  backBtn.addEventListener('click', goHome);
+
+  // 音声読み上げボタン
+  speakBtn.addEventListener('click', toggleSpeech);
+
+  // カテゴリタブ切り替え
+  catTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      playPopSound();
+      catTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentCategory = tab.dataset.category;
+      filterAndRenderGrid();
+    });
+  });
+
+  // 設定モーダル関連
+  const settingsBtn = document.getElementById('settings-btn');
+  const settingsModal = document.getElementById('settings-modal');
+  const saveKeyBtn = document.getElementById('save-key-btn');
+  const closeKeyBtn = document.getElementById('close-key-btn');
+  const apiKeyInput = document.getElementById('api-key-input');
+
+  settingsBtn.addEventListener('click', () => {
+    apiKeyInput.value = localStorage.getItem('zukan_gemini_key') || '';
+    settingsModal.classList.add('active');
+  });
+
+  closeKeyBtn.addEventListener('click', () => {
+    settingsModal.classList.remove('active');
+  });
+
+  saveKeyBtn.addEventListener('click', () => {
+    const key = apiKeyInput.value.trim();
+    if (key) {
+      localStorage.setItem('zukan_gemini_key', key);
+      alert('APIキーを ほぞんしたよ！これで 新しい 言葉も AIで 調べられるよ！');
+    } else {
+      localStorage.removeItem('zukan_gemini_key');
+      alert('APIキーを けしたよ。');
+    }
+    settingsModal.classList.remove('active');
+  });
+}
+
+// アイテムグリッド描画
+function renderGrid(items) {
+  itemGrid.innerHTML = '';
+  if (items.length === 0) {
+    itemGrid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 40px 10px; color: #64748b;">
+        <p style="font-size: 32px; margin-bottom: 8px;">🔍</p>
+        <p style="font-weight: 700;">みつからなかったよ。<br>べつの ことばで さがしてみてね！</p>
+      </div>
+    `;
+    return;
+  }
+
+  items.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `
+      <div class="item-card-icon">${item.icon}</div>
+      <div class="item-card-name">${item.name}</div>
+      <div class="item-card-badge">${item.origin.country || 'にほん'}</div>
+    `;
+    card.addEventListener('click', () => {
+      openDetailWithWarp(item);
+    });
+    itemGrid.appendChild(card);
+  });
+}
+
+// フィルタリング処理
+function filterAndRenderGrid() {
+  const query = normalizeQuery(searchInput.value);
+  const filtered = ZUKAN_DATA.filter(item => {
+    const matchCategory = (currentCategory === 'all') || 
+      (currentCategory === 'school' && item.category.includes('がっこう')) ||
+      (currentCategory === 'food' && item.category.includes('たべもの')) ||
+      (currentCategory === 'house' && item.category.includes('いえのなか')) ||
+      (currentCategory === 'music' && item.category.includes('がっき')) ||
+      (currentCategory === 'town' && (item.category.includes('まち') || item.category.includes('のりもの')));
+
+    const normName = normalizeQuery(item.name);
+    const normReading = normalizeQuery(item.reading);
+    const matchQuery = !query || 
+      normName.includes(query) || 
+      normReading.includes(query) ||
+      query.includes(normName) ||
+      (item.origin.original_word && normalizeQuery(item.origin.original_word).includes(query));
+
+    return matchCategory && matchQuery;
+  });
+
+  renderGrid(filtered);
+}
+
+// 検索ハンドラー
+async function handleSearch(query) {
+  if (!query) return;
+
+  // ひらがな・カタカナ正規化
+  const normQuery = normalizeQuery(query);
+
+  // プリセット内を検索
+  const match = ZUKAN_DATA.find(item => {
+    const normName = normalizeQuery(item.name);
+    const normReading = normalizeQuery(item.reading);
+    return normName === normQuery || 
+      normReading === normQuery ||
+      normName.includes(normQuery) ||
+      normQuery.includes(normName);
+  });
+
+  if (match) {
+    openDetailWithWarp(match);
+  } else {
+    // プリセットにない場合：Gemini APIキーがあればAI生成、なければ案内
+    const apiKey = localStorage.getItem('zukan_gemini_key');
+    if (apiKey) {
+      await fetchItemWithAI(query, apiKey);
+    } else {
+      filterAndRenderGrid();
+      if (itemGrid.children.length === 0) {
+        alert(`『${query}』は まだ タイムマシンに とうろく されていないよ！\n右上の『⚙️ せってい』から Gemini APIキーを入れると、AIが 小学1年生向けに おしえてくれるよ！`);
+      }
+    }
+  }
+}
+
+// タイムマシン（ワープ）演出して詳細へ
+function openDetailWithWarp(item) {
+  stopSpeech();
+  playPopSound();
+  currentItem = item;
+
+  const eraText = item.history_steps && item.history_steps[0] ? item.history_steps[0].era : '大むかし';
+  warpText.innerHTML = `<span>🌀</span><br>${item.name}の はじまりへ…<br><span style="font-size: 20px; color: #fef08a;">${eraText}に タイムスリップ！</span>`;
+  warpOverlay.classList.add('active');
+
+  setTimeout(() => {
+    warpOverlay.classList.remove('active');
+    showDetail(item);
+  }, 1100);
+}
+
+// 詳細画面を表示
+function showDetail(item) {
+  homeView.style.display = 'none';
+  detailView.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // ヒーローヘッダー
+  document.getElementById('detail-icon').textContent = item.icon;
+  document.getElementById('detail-name').innerHTML = `<ruby>${item.name}<rt>${item.reading}</rt></ruby>`;
+  document.getElementById('detail-badge').textContent = item.badge || `${item.origin.country}から きたよ`;
+
+  // 起源セクション
+  document.getElementById('origin-country').innerHTML = `${item.origin.country_flag || '🌍'} ${item.origin.country}`;
+  document.getElementById('origin-word').textContent = item.origin.original_word || '-';
+  document.getElementById('origin-meaning').textContent = item.origin.meaning || '-';
+  document.getElementById('origin-story').textContent = item.origin.story;
+
+  // タイムライン
+  const timelineEl = document.getElementById('detail-timeline');
+  timelineEl.innerHTML = '';
+  item.history_steps.forEach((step, idx) => {
+    const isCurrent = idx === item.history_steps.length - 1;
+    const stepDiv = document.createElement('div');
+    stepDiv.className = `timeline-step ${isCurrent ? 'current' : ''}`;
+    stepDiv.innerHTML = `
+      <div class="step-header">
+        <span class="step-era">${step.era}</span>
+        <span class="step-badge">${step.badge}</span>
+      </div>
+      <div class="step-body">
+        <div class="step-img">${step.image || item.icon}</div>
+        <div class="step-content">
+          <h4>${step.title}</h4>
+          <p>${step.text}</p>
+        </div>
+      </div>
+    `;
+    timelineEl.appendChild(stepDiv);
+  });
+
+  // まめちしき
+  const triviaEl = document.getElementById('detail-trivia');
+  triviaEl.innerHTML = '';
+  item.trivia.forEach((t, i) => {
+    const card = document.createElement('div');
+    card.className = 'trivia-card';
+    card.innerHTML = `
+      <div class="trivia-icon">${i % 2 === 0 ? '💡' : '👑'}</div>
+      <div class="trivia-text">${t}</div>
+    `;
+    triviaEl.appendChild(card);
+  });
+
+  // クイズ
+  const quizBox = document.getElementById('detail-quiz');
+  if (item.quiz) {
+    quizBox.style.display = 'block';
+    document.getElementById('quiz-question').textContent = item.quiz.question;
+    const optContainer = document.getElementById('quiz-options');
+    optContainer.innerHTML = '';
+    const feedback = document.getElementById('quiz-feedback');
+    feedback.className = 'quiz-feedback';
+    feedback.style.display = 'none';
+
+    item.quiz.options.forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-opt-btn';
+      btn.textContent = `${idx + 1}. ${opt}`;
+      btn.addEventListener('click', () => {
+        // 解答判定
+        const allBtns = optContainer.querySelectorAll('.quiz-opt-btn');
+        allBtns.forEach(b => b.disabled = true);
+
+        if (idx === item.quiz.answer) {
+          btn.classList.add('correct');
+          feedback.className = 'quiz-feedback show correct-msg';
+          feedback.innerHTML = `🎉 <strong>せいかい！</strong><br>${item.quiz.explanation}`;
+          playPositiveSound();
+          launchConfetti();
+        } else {
+          btn.classList.add('wrong');
+          allBtns[item.quiz.answer].classList.add('correct');
+          feedback.className = 'quiz-feedback show wrong-msg';
+          feedback.innerHTML = `😢 <strong>おしい！</strong><br>${item.quiz.explanation}`;
+        }
+      });
+      optContainer.appendChild(btn);
+    });
+  } else {
+    quizBox.style.display = 'none';
+  }
+
+  // おとな向け解説
+  const parentNote = document.getElementById('parent-note-content');
+  if (item.parent_note) {
+    document.getElementById('parent-accordion').style.display = 'block';
+    parentNote.textContent = item.parent_note;
+  } else {
+    document.getElementById('parent-accordion').style.display = 'none';
+  }
+}
+
+// ホームへ戻る
+function goHome() {
+  stopSpeech();
+  playPopSound();
+  detailView.classList.remove('active');
+  homeView.style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 音声読み上げ（SpeechSynthesis）
+function toggleSpeech() {
+  if (isSpeaking) {
+    stopSpeech();
+  } else {
+    startSpeech();
+  }
+}
+
+function startSpeech() {
+  if (!currentItem || !('speechSynthesis' in window)) {
+    alert('お使いのブラウザは 音声よみあげに たいおうしていません。');
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  // 読み上げテキストの構築（子供が聞きやすいようにゆっくりと）
+  const textParts = [
+    `${currentItem.name}。`,
+    `${currentItem.origin.country}から きたよ。`,
+    `${currentItem.origin.story}`,
+    `むかしは どうだったかな？`,
+    currentItem.history_steps.map(s => `${s.era}。${s.title}。${s.text}`).join('。'),
+    `びっくり まめちしき！`,
+    currentItem.trivia.join('。')
+  ];
+
+  const fullText = textParts.join(' ');
+  const utterance = new SpeechSynthesisUtterance(fullText);
+  utterance.lang = 'ja-JP';
+  utterance.rate = 0.92; // 小学1年生が聞き取りやすい優しいスピード
+  utterance.pitch = 1.1; // 少し明るめの声
+
+  utterance.onstart = () => {
+    isSpeaking = true;
+    speakBtn.classList.add('speaking');
+    speakBtn.innerHTML = '<span>⏹️</span> とめる';
+  };
+
+  utterance.onend = () => {
+    stopSpeech();
+  };
+
+  utterance.onerror = () => {
+    stopSpeech();
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function stopSpeech() {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  isSpeaking = false;
+  speakBtn.classList.remove('speaking');
+  speakBtn.innerHTML = '<span>🔊</span> こえで きく';
+}
+
+// 音声認識（SpeechRecognition）
+function setupSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    micBtn.style.display = 'none';
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = 'ja-JP';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onresult = (event) => {
+    const spokenWord = event.results[0][0].transcript.replace(/[。、！？]/g, '');
+    searchInput.value = spokenWord;
+    micBtn.classList.remove('listening');
+    handleSearch(spokenWord);
+  };
+
+  recognition.onerror = (e) => {
+    micBtn.classList.remove('listening');
+    console.log('音声認識エラー:', e);
+  };
+
+  recognition.onend = () => {
+    micBtn.classList.remove('listening');
+  };
+}
+
+function toggleVoiceInput() {
+  if (!recognition) {
+    alert('マイクが つかえないよ。もじを 入力して さがしてね！');
+    return;
+  }
+
+  if (micBtn.classList.contains('listening')) {
+    recognition.stop();
+    micBtn.classList.remove('listening');
+  } else {
+    try {
+      recognition.start();
+      micBtn.classList.add('listening');
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
+// Gemini APIによる動的図鑑生成（未知の言葉）
+async function fetchItemWithAI(keyword, apiKey) {
+  warpText.innerHTML = `<span>🤖</span><br>AIタイムマシンが『${keyword}』の<br>はじまりを たんけん中…`;
+  warpOverlay.classList.add('active');
+  searchBtn.disabled = true;
+
+  const prompt = `
+あなたは小学1年生向けの歴史・ものの起源のやさしい先生です。
+子どもから「${keyword}」の起源や名前の由来を聞かれました。
+以下の条件を厳格に守り、指定のJSON形式のみを出力してください。Markdownのコードブロック（\`\`\`json ... \`\`\`）で囲んで出力してください。
+
+【条件】
+- 対象は小学1年生（6〜7歳）です。
+- 原則ひらがな・カタカナを多めにし、難しい漢字は使わず、漢字を使う場合は「小学生でもわかる簡単なもの」にしてください。
+- 語り口は親しみやすく、ワクワクする口調にしてください。
+- 由来や歴史は史実に基づき、子どもが「へえー！」と驚くポイントを入れてください。
+
+【JSONスキーマ】
+{
+  "id": "英数字の識別子",
+  "name": "${keyword}",
+  "reading": "ひらがなの読み",
+  "category": "がっこう・ぶんぼうぐ / たべもの / いえのなか / のりもの / まちのなか のいずれか",
+  "icon": "該当する絵文字1個",
+  "badge": "〇〇から きたよ または 特徴の短い言葉",
+  "origin": {
+    "country": "発祥の国や地域名",
+    "country_flag": "その国の国旗絵文字",
+    "original_word": "もともとの言葉と読み",
+    "meaning": "もともとの意味",
+    "story": "小学1年生向けに起源を説明する2〜3文のお話"
+  },
+  "history_steps": [
+    {
+      "era": "むかしの時代（〇年前や〇〇時代など）",
+      "badge": "むかしの すがた",
+      "image": "絵文字",
+      "title": "むかしのすがたのタイトル",
+      "text": "むかしはどんな形や使われ方だったかの簡単な説明"
+    },
+    {
+      "era": "いま",
+      "badge": "いまの すがた",
+      "image": "絵文字",
+      "title": "いまのすがたのタイトル",
+      "text": "いまはどんな形や使われ方かの簡単な説明"
+    }
+  ],
+  "trivia": [
+    "びっくりする豆知識1（1〜2文）",
+    "びっくりする豆知識2（1〜2文）"
+  ],
+  "quiz": {
+    "question": "小学1年生が答えられる3択クイズの問題",
+    "options": ["選択肢1", "選択肢2", "選択肢3"],
+    "answer": 0, // 正解のインデックス（0〜2）
+    "explanation": "正解の易しい解説"
+  },
+  "parent_note": "保護者や大人が一緒に読んだときに詳しく補足説明できる学術的・歴史的背景（大人の日本語で1〜2段落）"
+}
+`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.3 }
+      })
+    });
+
+    const data = await res.json();
+    if (!data.candidates || !data.candidates[0].content.parts[0].text) {
+      throw new Error('AIからの お返事が とどきませんでした。');
+    }
+
+    const rawText = data.candidates[0].content.parts[0].text;
+    const jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, rawText];
+    const generatedItem = JSON.parse(jsonMatch[1]);
+
+    // プリセット一覧にも一時追加
+    ZUKAN_DATA.unshift(generatedItem);
+    warpOverlay.classList.remove('active');
+    showDetail(generatedItem);
+  } catch (err) {
+    warpOverlay.classList.remove('active');
+    console.error(err);
+    alert('AIタイムマシンで うまく 調べられなかったよ。APIキーが 正しいか たしかめてみてね！');
+  } finally {
+    searchBtn.disabled = false;
+  }
+}
+
+// 効果音（Web Audio APIによるシンセ音）
+function playPositiveSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    const now = ctx.currentTime;
+    osc.frequency.setValueAtTime(523.25, now); // C5
+    osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+    osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+    osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
+
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+
+    osc.start(now);
+    osc.stop(now + 0.6);
+  } catch (e) {
+    // AudioContext未許可等は無視
+  }
+}
+
+function loadApiKey() {
+  const savedKey = localStorage.getItem('zukan_gemini_key');
+  if (savedKey) {
+    const settingsBtn = document.getElementById('settings-btn');
+    settingsBtn.innerHTML = '⚙️ AIモード有効';
+    settingsBtn.style.borderColor = '#10b981';
+    settingsBtn.style.color = '#059669';
+  }
+}
+
+// ポコッという心地よいタップ音（Web Audio API）
+function playPopSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    const now = ctx.currentTime;
+    osc.frequency.setValueAtTime(320, now);
+    osc.frequency.exponentialRampToValueAtTime(580, now + 0.08);
+
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+
+    osc.start(now);
+    osc.stop(now + 0.08);
+  } catch (e) {
+    // 無視
+  }
+}
+
+// クイズ正解時の紙吹雪アニメーション
+function launchConfetti() {
+  const colors = ['#f97316', '#fbbf24', '#0ea5e9', '#10b981', '#ec4899', '#8b5cf6'];
+  const container = document.createElement('div');
+  container.className = 'confetti-container';
+  document.body.appendChild(container);
+
+  for (let i = 0; i < 48; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = `${Math.random() * 100}vw`;
+    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = `${Math.random() * 0.5}s`;
+    piece.style.animationDuration = `${1.6 + Math.random() * 0.8}s`;
+    piece.style.width = `${8 + Math.random() * 8}px`;
+    piece.style.height = `${8 + Math.random() * 8}px`;
+    container.appendChild(piece);
+  }
+
+  setTimeout(() => {
+    container.remove();
+  }, 2600);
+}
+
+</script>
 </body>
 </html>
