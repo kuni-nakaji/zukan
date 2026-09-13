@@ -57,10 +57,16 @@
   --radius-xl: 28px;
   --radius-pill: 9999px;
 
-  /* 遷移時間：キビキビとした確実なレスポンス */
+  /* ===== Emil Kowalski Animation Tokens (animations.dev) ===== */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --duration-feedback: 140ms;
+  --duration-enter: 240ms;
   --duration-quick: 120ms;
   --duration-normal: 180ms;
-  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ===== リセット & ベース ===== */
@@ -287,7 +293,7 @@ summary:focus-visible,
   font-size: 17px;
   font-weight: 900;
   cursor: pointer;
-  transition: background var(--duration-quick) ease, transform var(--duration-quick) ease;
+  transition: background var(--duration-quick) ease, transform var(--duration-feedback) var(--ease-out);
   user-select: none;
   white-space: nowrap;
 }
@@ -297,7 +303,7 @@ summary:focus-visible,
 }
 
 .search-submit-btn:active {
-  transform: translateY(1px);
+  transform: scale(0.97);
 }
 
 .search-submit-btn:disabled {
@@ -332,7 +338,7 @@ summary:focus-visible,
   font-weight: 700;
   color: var(--color-ink-muted);
   cursor: pointer;
-  transition: all var(--duration-quick) ease;
+  transition: all var(--duration-quick) var(--ease-out);
   white-space: nowrap;
   user-select: none;
 }
@@ -340,6 +346,10 @@ summary:focus-visible,
 .cat-tab:hover {
   border-color: var(--color-ink-muted);
   color: var(--color-ink-display);
+}
+
+.cat-tab:active {
+  transform: scale(0.96);
 }
 
 .cat-tab.active {
@@ -375,7 +385,7 @@ summary:focus-visible,
   text-align: center;
   cursor: pointer;
   box-shadow: var(--shadow-subtle);
-  transition: all var(--duration-quick) var(--ease-spring);
+  transition: transform var(--duration-feedback) var(--ease-out), box-shadow var(--duration-feedback) var(--ease-out), border-color var(--duration-feedback) var(--ease-out);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -386,18 +396,24 @@ summary:focus-visible,
   .item-card:hover {
     border-color: var(--accent-primary);
     box-shadow: var(--shadow-card-hover);
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+  }
+
+  .item-card:hover .item-card-icon {
+    transform: scale(1.15) rotate(5deg);
   }
 }
 
 .item-card:active {
-  transform: translateY(1px);
+  transform: scale(0.97);
 }
 
 .item-card-icon {
   font-size: 42px;
   line-height: 1;
   margin-bottom: 10px;
+  transition: transform var(--duration-normal) var(--ease-spring);
+  display: inline-block;
 }
 
 .item-card-name {
@@ -417,15 +433,15 @@ summary:focus-visible,
   border-radius: var(--radius-pill);
 }
 
-/* ===== ワープ演出 ===== */
+/* ===== ワープ演出（シネマティック・タイムスリップ） ===== */
 .warp-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(28, 25, 23, 0.85);
-  backdrop-filter: blur(8px);
+  background: radial-gradient(circle at center, rgba(14, 165, 233, 0.25) 0%, rgba(15, 23, 42, 0.92) 100%);
+  backdrop-filter: blur(12px);
   z-index: 2000;
   display: flex;
   flex-direction: column;
@@ -433,7 +449,7 @@ summary:focus-visible,
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--duration-normal) ease;
+  transition: opacity var(--duration-normal) var(--ease-out);
 }
 
 .warp-overlay.active {
@@ -442,28 +458,35 @@ summary:focus-visible,
 }
 
 .warp-machine {
-  font-size: 72px;
-  animation: warp-spin 1s infinite linear;
+  font-size: 80px;
+  animation: warp-spin 1.2s infinite var(--ease-fluid);
+  filter: drop-shadow(0 0 24px rgba(56, 189, 248, 0.7));
 }
 
 .warp-text {
   color: #ffffff;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 900;
-  margin-top: 20px;
+  margin-top: 24px;
   text-align: center;
   line-height: 1.5;
+  animation: warp-text-breathe 1.2s infinite alternate var(--ease-in-out);
 }
 
 @keyframes warp-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  0% { transform: scale(0.92) rotate(0deg); }
+  50% { transform: scale(1.15) rotate(180deg); }
+  100% { transform: scale(0.92) rotate(360deg); }
 }
 
-/* ===== 詳細画面（カード多重入れ子の解消・フラットシート化） ===== */
+@keyframes warp-text-breathe {
+  from { transform: scale(0.96); opacity: 0.85; }
+  to { transform: scale(1.02); opacity: 1; text-shadow: 0 0 20px rgba(56, 189, 248, 0.8); }
+}
+
+/* ===== 詳細画面（スタッガー登場で絵本が開くような感動を演出） ===== */
 .detail-view {
   display: none;
-  animation: fadeIn var(--duration-normal) ease-out;
   padding-top: 20px;
 }
 
@@ -484,7 +507,7 @@ summary:focus-visible,
   font-weight: 700;
   color: var(--color-ink-muted);
   cursor: pointer;
-  transition: all var(--duration-quick) ease;
+  transition: all var(--duration-quick) var(--ease-out);
   user-select: none;
 }
 
@@ -495,16 +518,64 @@ summary:focus-visible,
 }
 
 .back-btn:active {
-  transform: translateY(1px);
+  transform: scale(0.97);
 }
 
-/* メイン詳細シート（カードインカードを完全廃止） */
+/* メイン詳細シート */
 .detail-sheet {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   padding: 36px 36px 44px;
   box-shadow: var(--shadow-sheet);
+  animation: sheetEntrance var(--duration-enter) var(--ease-out) both;
+}
+
+@keyframes sheetEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 詳細シート内部のスタッガー登場（Cascade Reveal） */
+@keyframes itemEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.detail-view.active .detail-header {
+  animation: itemEntrance var(--duration-enter) var(--ease-out) 60ms both;
+}
+
+.detail-view.active .detail-origin-section {
+  animation: itemEntrance var(--duration-enter) var(--ease-out) 110ms both;
+}
+
+.detail-view.active .detail-history-section {
+  animation: itemEntrance var(--duration-enter) var(--ease-out) 160ms both;
+}
+
+.detail-view.active .detail-trivia-section {
+  animation: itemEntrance var(--duration-enter) var(--ease-out) 210ms both;
+}
+
+.detail-view.active .detail-quiz-section {
+  animation: itemEntrance var(--duration-enter) var(--ease-out) 260ms both;
+}
+
+.detail-view.active .detail-parent-section {
+  animation: itemEntrance var(--duration-enter) var(--ease-out) 310ms both;
 }
 
 /* ヒーローヘッダー */
@@ -849,30 +920,48 @@ summary:focus-visible,
   color: var(--color-ink-display);
   text-align: left;
   cursor: pointer;
-  transition: all var(--duration-quick) ease;
+  transition: background 150ms var(--ease-out), border-color 150ms var(--ease-out), transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
   user-select: none;
 }
 
-.quiz-opt-btn:hover {
-  background: var(--color-surface);
-  border-color: var(--color-ink-display);
+@media (hover: hover) {
+  .quiz-opt-btn:hover {
+    background: var(--color-surface);
+    border-color: var(--color-ink-display);
+    transform: translateY(-1px);
+  }
 }
 
 .quiz-opt-btn:active {
-  transform: translateY(1px);
+  transform: scale(0.98);
+}
+
+@keyframes springPop {
+  0% { transform: scale(0.97); }
+  45% { transform: scale(1.04); }
+  75% { transform: scale(0.99); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shakeGentle {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
 }
 
 .quiz-opt-btn.correct {
   background: var(--accent-emerald) !important;
   color: #ffffff !important;
   border-color: var(--accent-emerald) !important;
+  animation: springPop 360ms var(--ease-out);
 }
 
 .quiz-opt-btn.wrong {
   background: #f87171 !important;
   color: #ffffff !important;
   border-color: #ef4444 !important;
-  opacity: 0.8;
+  opacity: 0.85;
+  animation: shakeGentle 320ms var(--ease-out);
 }
 
 .quiz-feedback {
@@ -887,6 +976,7 @@ summary:focus-visible,
 
 .quiz-feedback.show {
   display: block;
+  animation: itemEntrance var(--duration-enter) var(--ease-out) both;
 }
 
 .quiz-feedback.correct-msg {
@@ -1065,11 +1155,10 @@ summary:focus-visible,
   background: var(--accent-primary-hover);
 }
 
-/* ===== クイズ正解時の紙吹雪 (Confetti) ===== */
+/* ===== クイズ正解時の祝祭パーティクル (Confetti & Star Burst) ===== */
 .confetti-container {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
@@ -1079,17 +1168,25 @@ summary:focus-visible,
 
 .confetti-piece {
   position: absolute;
-  top: -20px;
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  animation: confetti-fall 2.2s linear forwards;
+  user-select: none;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: confetti-burst-fall var(--fall-duration, 2.2s) var(--ease-fluid) forwards;
 }
 
-@keyframes confetti-fall {
-  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-  80% { opacity: 1; }
-  100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+@keyframes confetti-burst-fall {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  15% {
+    transform: translate3d(var(--tx-mid, 0px), var(--ty-mid, -120px), 0) scale(1.2) rotate(var(--rot-mid, 180deg));
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--tx-end, 0px), var(--ty-end, 85vh), 0) scale(0.7) rotate(var(--rot-end, 720deg));
+    opacity: 0;
+  }
 }
 
 @keyframes fadeIn {
@@ -2668,12 +2765,14 @@ function showDetail(item) {
           feedback.className = 'quiz-feedback show correct-msg';
           feedback.innerHTML = `🎉 <strong>せいかい！</strong><br>${item.quiz.explanation}`;
           playPositiveSound();
-          launchConfetti();
+          const rect = btn.getBoundingClientRect();
+          launchConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
         } else {
           btn.classList.add('wrong');
           allBtns[item.quiz.answer].classList.add('correct');
           feedback.className = 'quiz-feedback show wrong-msg';
           feedback.innerHTML = `😢 <strong>おしい！</strong><br>${item.quiz.explanation}`;
+          playGentleThudSound();
         }
       });
       optContainer.appendChild(btn);
@@ -2964,22 +3063,85 @@ function playPopSound() {
   }
 }
 
-// クイズ正解時の紙吹雪アニメーション
-function launchConfetti() {
-  const colors = ['#f97316', '#fbbf24', '#0ea5e9', '#10b981', '#ec4899', '#8b5cf6'];
+// おしいときの穏やかなボヨン音
+function playGentleThudSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    const now = ctx.currentTime;
+    osc.frequency.setValueAtTime(240, now);
+    osc.frequency.exponentialRampToValueAtTime(160, now + 0.18);
+
+    gain.gain.setValueAtTime(0.18, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+
+    osc.start(now);
+    osc.stop(now + 0.18);
+  } catch (e) {
+    // 無視
+  }
+}
+
+// クイズ正解時の祝祭パーティクル（Emil Kowalski Delight原則：放物線バーストとキラキラスター）
+function launchConfetti(originX, originY) {
+  const colors = ['#f97316', '#fbbf24', '#0ea5e9', '#10b981', '#ec4899', '#8b5cf6', '#eab308'];
+  const symbols = ['★', '✦', '✧', '●', '■'];
   const container = document.createElement('div');
   container.className = 'confetti-container';
   document.body.appendChild(container);
 
-  for (let i = 0; i < 48; i++) {
+  const startX = originX || (window.innerWidth / 2);
+  const startY = originY || (window.innerHeight * 0.6);
+  const count = 52;
+
+  for (let i = 0; i < count; i++) {
     const piece = document.createElement('div');
     piece.className = 'confetti-piece';
-    piece.style.left = `${Math.random() * 100}vw`;
-    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    piece.style.animationDelay = `${Math.random() * 0.5}s`;
-    piece.style.animationDuration = `${1.6 + Math.random() * 0.8}s`;
-    piece.style.width = `${8 + Math.random() * 8}px`;
-    piece.style.height = `${8 + Math.random() * 8}px`;
+
+    const isSymbol = Math.random() > 0.4;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+
+    if (isSymbol) {
+      piece.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      piece.style.fontSize = `${16 + Math.random() * 16}px`;
+      piece.style.color = color;
+      piece.style.lineHeight = '1';
+    } else {
+      const size = 8 + Math.random() * 8;
+      piece.style.width = `${size}px`;
+      piece.style.height = `${size * (Math.random() > 0.5 ? 1.4 : 1)}px`;
+      piece.style.backgroundColor = color;
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '3px';
+    }
+
+    // 放射状の初速と放物線軌道
+    const angle = (Math.PI * 2 * (i / count)) + ((Math.random() - 0.5) * 0.4);
+    const burstDist = 100 + Math.random() * 180;
+    const txMid = Math.cos(angle) * burstDist;
+    const tyMid = Math.sin(angle) * burstDist - (80 + Math.random() * 90); // 上向きバイアス
+    const txEnd = txMid + (Math.random() - 0.5) * 160;
+    const tyEnd = window.innerHeight - startY + 80;
+    const rotMid = (Math.random() - 0.5) * 360;
+    const rotEnd = rotMid + (Math.random() - 0.5) * 720;
+    const duration = 1.6 + Math.random() * 0.8;
+    const delay = Math.random() * 0.08;
+
+    piece.style.left = `${startX}px`;
+    piece.style.top = `${startY}px`;
+    piece.style.setProperty('--tx-mid', `${txMid}px`);
+    piece.style.setProperty('--ty-mid', `${tyMid}px`);
+    piece.style.setProperty('--tx-end', `${txEnd}px`);
+    piece.style.setProperty('--ty-end', `${tyEnd}px`);
+    piece.style.setProperty('--rot-mid', `${rotMid}deg`);
+    piece.style.setProperty('--rot-end', `${rotEnd}deg`);
+    piece.style.setProperty('--fall-duration', `${duration}s`);
+    piece.style.animationDelay = `${delay}s`;
+
     container.appendChild(piece);
   }
 
