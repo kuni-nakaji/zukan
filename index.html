@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>もののなまえ はじまり図鑑 〜タイムマシンで たんけん！〜</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="logo-badge">🚀 しょうがく１ねんせい むけ</div>
+    <div class="title-container" onclick="goHome()">
+      <span class="title-icon">⏰</span>
+      <h1 class="app-title">もののなまえ はじまり図鑑</h1>
+      <span class="title-icon">✨</span>
+    </div>
+
+    <div class="header-actions">
+      <button class="settings-btn" id="settings-btn" aria-label="せってい">⚙️ せってい</button>
+    </div>
+  </header>
+
+  <!-- タイムマシン ワープ演出オーバーレイ -->
+  <div class="warp-overlay" id="warp-overlay">
+    <div class="warp-machine">🌀</div>
+    <div class="warp-text" id="warp-text">タイムスリップ！</div>
+  </div>
+
+  <div class="container">
+    
+    <!-- ホーム画面 -->
+    <main id="home-view">
+      <!-- 検索カード -->
+      <section class="search-card">
+        <form id="search-form" role="search" onsubmit="return false">
+          <div class="search-input-group">
+            <button class="mic-btn" id="mic-btn" title="こえで さがす" type="button" aria-label="こえで さがす（音声入力）">🎙️</button>
+            <input 
+              type="text" 
+              id="search-input" 
+              class="search-input" 
+              placeholder="しりたい ものの なまえ（れい：ランドセル、パン）" 
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <button class="search-submit-btn" id="search-btn" type="submit">
+              <ruby>調<rt>しら</rt></ruby>べる 🚀
+            </button>
+          </div>
+        </form>
+
+        <!-- カテゴリ切り替え -->
+        <div class="popular-section">
+          <div class="section-label">
+            <span>🏷️</span> なかま で えらぶ
+          </div>
+          <div class="category-tabs">
+            <button class="cat-tab active" data-category="all">🌟 ぜんぶ</button>
+            <button class="cat-tab" data-category="school">🎒 がっこう・ぶんぼうぐ</button>
+            <button class="cat-tab" data-category="food">🍞 たべもの</button>
+            <button class="cat-tab" data-category="town">🚲 まち・のりもの</button>
+            <button class="cat-tab" data-category="house">🏠 いえのなか</button>
+            <button class="cat-tab" data-category="music">🎹 がっき</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- アイテム一覧 -->
+      <section>
+        <div class="section-label">
+          <span>📚</span> タップして タイムマシンに のろう！
+        </div>
+        <div class="item-grid" id="item-grid" aria-live="polite">
+          <!-- JSでカードを動的生成 -->
+        </div>
+      </section>
+    </main>
+
+    <!-- 詳細（図鑑たんけん）画面 -->
+    <article id="detail-view" class="detail-view">
+      
+      <!-- もどるボタン -->
+      <div class="back-btn-container">
+        <button class="back-btn" id="back-btn">
+          <span>🔙</span> ホームへ もどる
+        </button>
+      </div>
+
+      <!-- ヒーローカード -->
+      <div class="hero-card">
+        <div class="hero-header">
+          <div class="hero-title-group">
+            <div class="hero-icon" id="detail-icon">🎒</div>
+            <div class="hero-title-text">
+              <h2 id="detail-name">ランドセル</h2>
+              <span class="hero-badge-tag" id="detail-badge">オランダから きたよ</span>
+            </div>
+          </div>
+          <button class="speak-btn" id="speak-btn">
+            <span>🔊</span> こえで きく
+          </button>
+        </div>
+
+        <!-- なまえの はじまり（起源） -->
+        <div class="origin-section">
+          <div class="origin-badge">
+            <span>⛵️</span> なまえの はじまり（どこから きたの？）
+          </div>
+          <div class="origin-meta">
+            <div class="meta-box">
+              <div class="meta-label">生まれた くに</div>
+              <div class="meta-val" id="origin-country">🇳🇱 オランダ</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">もともとの ことば と いみ</div>
+              <div class="meta-val">
+                <span id="origin-word">ransel</span>
+                <span style="font-size: 13px; color: #64748b; display: block;" id="origin-meaning">（せなかに せおう ふくろ）</span>
+              </div>
+            </div>
+          </div>
+          <div class="origin-story" id="origin-story">
+            むかしの オランダの へいたいさんが せおっていた『ランセル』という ふくろが、にほんに つたわって『ランドセル』と よばれるようになったよ！
+          </div>
+        </div>
+
+        <!-- 歴史タイムライン（むかし・いま） -->
+        <h3 class="section-title">
+          <span>⏳</span> むかし と いま の ちがい（へんせん）
+        </h3>
+        <div class="timeline" id="detail-timeline">
+          <!-- JSでステップ生成 -->
+        </div>
+
+        <!-- びっくり豆知識 -->
+        <h3 class="section-title">
+          <span>✨</span> びっくり まめちしき！
+        </h3>
+        <div class="trivia-cards" id="detail-trivia">
+          <!-- JSでカード生成 -->
+        </div>
+
+        <!-- 3択クイズ -->
+        <div class="quiz-box" id="detail-quiz">
+          <div class="quiz-badge">🎯 たのしい クイズ！</div>
+          <div class="quiz-question" id="quiz-question">ランドセルは どこの くにの ことばでしょう？</div>
+          <div class="quiz-options" id="quiz-options">
+            <!-- JSで選択肢生成 -->
+          </div>
+          <div class="quiz-feedback" id="quiz-feedback" aria-live="assertive"></div>
+        </div>
+
+        <!-- おとな向け解説アコーディオン -->
+        <div class="parent-accordion" id="parent-accordion">
+          <details>
+            <summary class="parent-summary">
+              <span>👨‍👩‍👧 <strong>おうちの ひとへ</strong>（詳しい歴史の背景）</span>
+              <span>▼</span>
+            </summary>
+            <div class="parent-content" id="parent-note-content">
+              <!-- JSで大人の解説挿入 -->
+            </div>
+          </details>
+        </div>
+
+      </div>
+    </article>
+
+  </div>
+
+  <!-- 設定モーダル（Gemini APIキー等） -->
+  <div class="modal-backdrop" id="settings-modal">
+    <div class="modal-card">
+      <h3 class="modal-title">⚙️ おうちのひと向け せってい</h3>
+      <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;">
+        Google Gemini APIキーを入力すると、プリセット（20個）以外のどんな言葉でも、AIが小学1年生向けに「起源・歴史・豆知識・クイズ」を自動生成します。
+      </p>
+      <div class="form-group">
+        <label class="form-label" for="api-key-input">Gemini API Key (無料枠でOK):</label>
+        <input type="password" id="api-key-input" class="form-input" placeholder="AIzaSy...">
+        <p style="font-size: 12px; color: #94a3b8; margin-top: 4px;">
+          ※キーはご自身のブラウザ（LocalStorage）にのみ安全に保存されます。
+        </p>
+      </div>
+      <div class="modal-btn-row">
+        <button class="btn-secondary" id="close-key-btn">とじる</button>
+        <button class="btn-primary" id="save-key-btn">ほぞんする</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- スクリプト読み込み -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
